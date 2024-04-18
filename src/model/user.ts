@@ -1,7 +1,7 @@
 import { DataTypes, Model} from "sequelize";
 import { sequelize } from "../config/db";
 import { UserEntity } from "../entities/userEntity";
-
+// ADD COMMON ATTRIBUTES FROM USER TYPES
 export const User = sequelize.define (
   "User",
   {
