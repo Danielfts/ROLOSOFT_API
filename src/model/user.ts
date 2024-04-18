@@ -1,12 +1,13 @@
-import { DataTypes, Model, ModelCtor } from "sequelize";
+import { DataTypes, Model} from "sequelize";
 import { sequelize } from "../config/db";
+import { UserEntity } from "../entities/userEntity";
 
-export const User = sequelize.define(
+export const User = sequelize.define (
   "User",
   {
     id: {
-      type: DataTypes.INTEGER,
-      autoIncrement: true,
+      type: DataTypes.UUID,
+      defaultValue: DataTypes.UUIDV4,
       primaryKey: true,
     },
     email: {

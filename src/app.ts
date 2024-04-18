@@ -1,6 +1,6 @@
 import express from "express";
 import cors from "cors";
-import router from "./controller/router";
+import router from "./routes/router";
 import { sequelize } from "./config/db";
 
 
