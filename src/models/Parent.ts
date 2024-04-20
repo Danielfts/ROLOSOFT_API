@@ -1,6 +1,6 @@
 import { Model, DataTypes } from "sequelize";
 import { sequelize } from "../config/db";
-import User from "./user";
+import User from "./User";
 
 class Parent extends Model {}
 
