@@ -1,5 +1,5 @@
 import { UserEntity } from "../entities/userEntity";
-import { User } from "../model/user";
+import User from "../model/user";
 import { isValidEmail } from "../utlis/inputValidation";
 import bcrypt from "bcryptjs";
 

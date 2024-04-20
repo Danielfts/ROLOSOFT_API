@@ -1,28 +1,72 @@
-import { DataTypes, Model} from "sequelize";
+import { Model, DataTypes } from "sequelize";
 import { sequelize } from "../config/db";
-import { UserEntity } from "../entities/userEntity";
+import Gender from "./Gender";
 
-export const User = sequelize.define (
-  "User",
-  {
-    id: {
-      type: DataTypes.UUID,
-      defaultValue: DataTypes.UUIDV4,
-      primaryKey: true,
-    },
-    email: {
-      type: DataTypes.STRING(255),
-      unique: true,
-      allowNull: false,
-    },
-    password_token: {
-      type: DataTypes.STRING(255),
-      allowNull: false,
-    }
+class User extends Model {}
+
+User.init({
+  id: {
+    type: DataTypes.UUID,
+    primaryKey: true,
+    defaultValue: DataTypes.UUIDV4
   },
-  {
-    tableName: "users",
-    timestamps: true,
-    paranoid: true,
+  firstName: {
+    type: DataTypes.STRING,
+    allowNull: false
+  },
+  lastName: {
+    type: DataTypes.STRING,
+    allowNull: false
+  },
+  email: {
+    type: DataTypes.STRING,
+    allowNull: false,
+    unique: true
+  },
+  password: {
+    type: DataTypes.STRING,
+    allowNull: false
+  },
+  phone: {
+    type: DataTypes.STRING,
+    allowNull: true
+  },
+  photo: {
+    type: DataTypes.TEXT,
+    allowNull: true
+  },
+  birthDate: {
+    type: DataTypes.DATE,
+    allowNull: true
+  },
+  address: {
+    type: DataTypes.STRING,
+    allowNull: true
+  },
+  gender: {
+    type: DataTypes.UUID,
+    references: {
+      model: Gender,
+      key: "id",
+    },
+  },
+}, {
+  sequelize,
+  tableName: "User",
+  modelName: "User"
+});
+
+Gender.hasMany(User, {
+  foreignKey: {
+    name: "gender",
+    allowNull: false
   }
-);
+});
+User.belongsTo(Gender, {
+  foreignKey: {
+    name: "gender",
+    allowNull: false
+  }
+});
+
+export default User;
