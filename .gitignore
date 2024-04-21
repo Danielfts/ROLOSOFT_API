@@ -131,3 +131,4 @@ dist
 .pnp.*
 ROLOSOFT.session.sql
 .vscode/settings.json
+.env.production
