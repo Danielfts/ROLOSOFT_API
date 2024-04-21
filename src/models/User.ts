@@ -62,6 +62,7 @@ Gender.hasMany(User, {
     allowNull: false
   }
 });
+
 User.belongsTo(Gender, {
   foreignKey: {
     name: "gender",

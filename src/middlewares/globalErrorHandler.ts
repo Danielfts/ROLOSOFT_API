@@ -1,5 +1,5 @@
-import ClientError from "../errors/clientError";
-import ServerError from "../errors/serverError";
+import ClientError from "../errors/ClientError";
+import ServerError from "../errors/ServerError";
 
 const inDevMode = process.env.NODE_ENV === "development";
 
