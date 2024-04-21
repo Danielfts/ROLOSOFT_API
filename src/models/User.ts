@@ -12,11 +12,12 @@ class User extends Model < InferAttributes<User, {}>, InferCreationAttributes<Us
   declare email: string;
   declare password: string;
   declare birthDate: Date;
+  declare Gender: NonAttribute<Gender>;
   declare genderId: ForeignKey<UUID>;
   declare phone: string | null;
   declare photo: string | null;
   declare address: ForeignKey<UUID> | null;
-  declare Gender: NonAttribute<Gender>;
+  declare role: string;
 
   //MIXINS
   declare getGender: HasOneGetAssociationMixin<Gender>;
@@ -87,6 +88,10 @@ User.init({
   deletedAt: {
     type: DataTypes.DATE,
     allowNull: true
+  },
+  role: {
+    type: DataTypes.ENUM("admin", "student"),
+    allowNull: false,
   }
 }, {
   sequelize,

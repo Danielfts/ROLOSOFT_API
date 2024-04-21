@@ -40,6 +40,7 @@ class UserService {
         birthDate: user.birthDate,
         password: "****",
         gender: user.Gender.name,
+        role: user.role,
       }
     });
     return usersDTO;
@@ -80,6 +81,7 @@ class UserService {
       password: user.password,
       birthDate: user.birthDate,
       phone: user.phone,
+      role: user.role,
       genderId: gender.id,
     });
 
@@ -92,6 +94,7 @@ class UserService {
       birthDate: createdUser.birthDate,
       password: "****",
       gender:(await createdUser.getGender()).name,
+      role: createdUser.role,
     }
 
     return userDTO;

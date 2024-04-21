@@ -6,6 +6,7 @@ interface UserDTO {
     password: string;
     birthDate: Date ;
     gender: string;
+    role: string;
     phone: string | null;
 };
 
