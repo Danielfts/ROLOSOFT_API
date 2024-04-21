@@ -1,3 +1,4 @@
+import UserDTO from "../dtos/userDTO";
 import { UserEntity } from "../entities/userEntity";
 import User from "../models/User";
 import { isValidEmail } from "../utils/inputValidation";
@@ -17,7 +18,7 @@ class UserService {
     return users;
   }
 
-  public static async createUser(user: UserEntity): Promise<any> {
+  public static async createUser(user: UserDTO): Promise<any> {
     if (!(await isValidEmail(user.email))) {
       throw new Error("Invalid email address");
     }
@@ -32,11 +33,14 @@ class UserService {
     }
 
     const salt: string = await bcrypt.genSalt(10);
-    const hashedPassword: string = await bcrypt.hash(user.password_token, salt);
-    user.password_token = hashedPassword;
+    const hashedPassword: string = await bcrypt.hash(user.password, salt);
+    user.password = hashedPassword;
     let createdUser = await User.create({
+      firstName: user.firstName,
+      lastName: user.lastName,
       email: user.email,
-      password_token: user.password_token,
+      password: user.password,
+      birthDate: user.birthDate,
     });
 
     return createdUser;
