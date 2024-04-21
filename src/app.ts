@@ -26,7 +26,8 @@ app.use(express.json());
 app.use(router);
 
 async function main() {
-  await sequelize.sync({ force: false });
+  // await sequelize.drop();
+  await sequelize.sync({ force: true, alter: true });
   console.log("Connected to DB");
   app.listen(port, () => {
     console.log(`Server is running on port: ${port}. Visit http://localhost:${port} to check the API!`);

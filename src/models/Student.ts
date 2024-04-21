@@ -14,7 +14,7 @@ class Student extends Model<
 
 Student.init(
   {
-    user: {
+    id: {
       type: DataTypes.UUID,
       primaryKey: true,
       references: {
@@ -49,7 +49,7 @@ Student.init(
 );
 
 Student.belongsTo(User, {
-  foreignKey: "user",
+  foreignKey: "id",
 });
 
 User.hasOne(Student)
