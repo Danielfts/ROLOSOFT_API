@@ -14,12 +14,38 @@ class UserService {
       return false;
     }
   }
+
   public static async getAllUsers(): Promise<any[]> {
-    const users = await User.findAll();
-    return users;
+    const users = await User.findAll({
+      include: Gender,
+      attributes: {
+        exclude: [
+          "password",
+          "gender",
+          "photo",
+          "address",
+          "createdAt",
+          "updatedAt",
+          "deletedAt",
+        ],
+      },
+    });
+    const usersDTO: UserDTO[] = users.map( (user: User) => {
+      return {
+        id: user.id.toString(),
+        firstName: user.firstName,
+        lastName: user.lastName,
+        email: user.email,
+        phone: user.phone,
+        birthDate: user.birthDate,
+        password: "****",
+        gender: user.Gender.name,
+      }
+    });
+    return usersDTO;
   }
 
-  public static async createUser(user: UserDTO): Promise<any> {
+  public static async createUser(user: UserDTO): Promise<UserDTO> {
     if (!(await isValidEmail(user.email))) {
       throw new Error("Invalid email address");
     }
@@ -40,8 +66,8 @@ class UserService {
     let gender: Gender | null;
 
     gender = await Gender.findOne({
-      where: { name: user.gender}
-    }) 
+      where: { name: user.gender },
+    });
 
     if (gender === null) {
       throw new Error("Gender not found");
@@ -53,13 +79,25 @@ class UserService {
       email: user.email,
       password: user.password,
       birthDate: user.birthDate,
-      gender: gender.id
+      phone: user.phone,
+      genderId: gender.id,
     });
 
-    return createdUser;
+    let userDTO: UserDTO = {
+      id: createdUser.id.toString(),
+      firstName: createdUser.firstName,
+      lastName: createdUser.lastName,
+      email: createdUser.email,
+      phone: createdUser.phone,
+      birthDate: createdUser.birthDate,
+      password: "****",
+      gender:(await createdUser.getGender()).name,
+    }
+
+    return userDTO;
   }
 
-  public static async logIn(email: string, password: string): Promise<boolean> {
+  public static async logIn(email: string, password: string): Promise<{success: boolean, id: string}> {
     const user: User | null = await User.findOne({ where: { email: email } });
     if (!user) {
       throw new Error("User not found");
@@ -72,7 +110,7 @@ class UserService {
     if (!isPasswordValid) {
       throw new Error("Invalid password");
     }
-    return true;
+    return {success: true, id: user.id.toString()};
   }
 }
 
