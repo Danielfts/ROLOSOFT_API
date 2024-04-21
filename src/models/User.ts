@@ -1,6 +1,7 @@
 import { Model, DataTypes } from "sequelize";
 import { sequelize } from "../config/db";
 import Gender from "./Gender";
+import Address from "./Address";
 
 class User extends Model {}
 
@@ -40,8 +41,11 @@ User.init({
     allowNull: true
   },
   address: {
-    type: DataTypes.STRING,
-    allowNull: true
+    type: DataTypes.UUID,
+    references: {
+      model: Address,
+      key: "id",
+    },
   },
   gender: {
     type: DataTypes.UUID,
@@ -56,6 +60,7 @@ User.init({
   modelName: "User"
 });
 
+// Gender association
 Gender.hasMany(User, {
   foreignKey: {
     name: "gender",
@@ -67,6 +72,19 @@ User.belongsTo(Gender, {
   foreignKey: {
     name: "gender",
     allowNull: false
+  }
+});
+
+// Address association
+User.hasOne(Address, {
+  foreignKey: {
+    name: "address"
+  }
+});
+
+Address.belongsTo(User, {
+  foreignKey: {
+    name: "address"
   }
 });
 
