@@ -1,20 +1,20 @@
-import { Model, DataTypes, InferAttributes, InferCreationAttributes, ForeignKey } from "sequelize";
+import { Model, DataTypes, InferAttributes, InferCreationAttributes, ForeignKey, CreationOptional } from "sequelize";
 import { sequelize } from "../config/db";
 import Gender from "./Gender";
 import Address from "./Address";
+import { UUID } from "crypto";
 
 class User extends Model < InferAttributes<User>, InferCreationAttributes<User>> {
-  id: string;
-  firstName: string;
-  lastName: string;
-  email: string;
-  password: string;
-  phone: string;
-  photo: string;
-  birthDate: Date;
-  address: ForeignKey<String>;
-  
-
+  declare id:CreationOptional <UUID>;
+  declare firstName: string;
+  declare lastName: string;
+  declare email: string;
+  declare password: string;
+  declare birthDate: Date;
+  declare gender: ForeignKey<UUID>;
+  declare phone: string | null;
+  declare photo: string | null;
+  declare address: ForeignKey<UUID> | null;
 
 }
 
@@ -50,7 +50,7 @@ User.init({
     allowNull: true
   },
   birthDate: {
-    type: DataTypes.DATE,
+    type: DataTypes.DATEONLY,
     allowNull: true
   },
   address: {
@@ -70,7 +70,8 @@ User.init({
 }, {
   sequelize,
   tableName: "User",
-  modelName: "User"
+  modelName: "User",
+  paranoid: true,
 });
 
 // Gender association
