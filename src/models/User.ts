@@ -1,13 +1,24 @@
-import { Model, DataTypes, InferAttributes, InferCreationAttributes } from "sequelize";
+import { Model, DataTypes, InferAttributes, InferCreationAttributes, ForeignKey } from "sequelize";
 import { sequelize } from "../config/db";
 import Gender from "./Gender";
 import Address from "./Address";
 
 class User extends Model < InferAttributes<User>, InferCreationAttributes<User>> {
+  id: string;
+  firstName: string;
+  lastName: string;
+  email: string;
+  password: string;
+  phone: string;
+  photo: string;
+  birthDate: Date;
+  address: ForeignKey<String>;
   
+
+
 }
 
-User.init({
+User.init({ 
   id: {
     type: DataTypes.UUID,
     primaryKey: true,
