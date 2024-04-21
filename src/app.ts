@@ -15,7 +15,7 @@ import { sequelize } from "./config/db";
 import { setupDatabase } from "./utils/dbSetup";
 
 const app = express();
-const port = 5555;
+const port = process.env.PORT;
 
 app.use(cors({
   origin: "*",
