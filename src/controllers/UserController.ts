@@ -2,7 +2,6 @@ import UserDTO from "../dtos/userDTO";
 import UserService from "../services/UserService";
 import { StatusCodes } from "http-status-codes";
 
-
 class UserController {
   public static async logIn(req: any, res: any): Promise<void> {
     try {
@@ -21,6 +20,8 @@ class UserController {
         case "Invalid password":
           res.status(StatusCodes.UNAUTHORIZED).send("Invalid password");
           break;
+        case "Gender not found":
+          res.status(StatusCodes.BAD_REQUEST);
         default:
           res
             .status(StatusCodes.INTERNAL_SERVER_ERROR)
@@ -41,30 +42,34 @@ class UserController {
 
   public static async getAllUsers(req: any, res: any): Promise<void> {
     try {
-        const users = await UserService.getAllUsers();
-        res.status(StatusCodes.OK).send(users);
+      const users = await UserService.getAllUsers();
+      res.status(StatusCodes.OK).send(users);
     } catch (error) {
-        res.status(StatusCodes.INTERNAL_SERVER_ERROR).send("Internal Server Error");
+      res
+        .status(StatusCodes.INTERNAL_SERVER_ERROR)
+        .send("Internal Server Error");
     }
   }
 
   public static async createUser(req: any, res: any): Promise<void> {
     try {
-        const user:UserDTO = req.body;
-        const createdUser = await UserService.createUser(user);
-        res.status(StatusCodes.CREATED).send(createdUser);
-    } catch (error:any) {
+      const user: UserDTO = req.body;
+      const createdUser = await UserService.createUser(user);
+      res.status(StatusCodes.CREATED).send(createdUser);
+    } catch (error: any) {
       console.log(error.message);
-        switch (error.message) {
-            case "Invalid email address":
-                res.status(StatusCodes.BAD_REQUEST).send("Invalid email address");
-                break;
-            case "Email already exists":
-                res.status(StatusCodes.BAD_REQUEST).send("Email already exists");
-                break;
-            default:
-                res.status(StatusCodes.INTERNAL_SERVER_ERROR).send("Internal Server Error");
-            }
+      switch (error.message) {
+        case "Invalid email address":
+          res.status(StatusCodes.BAD_REQUEST).send("Invalid email address");
+          break;
+        case "Email already exists":
+          res.status(StatusCodes.BAD_REQUEST).send("Email already exists");
+          break;
+        default:
+          res
+            .status(StatusCodes.INTERNAL_SERVER_ERROR)
+            .send("Internal Server Error");
+      }
     }
   }
 }
