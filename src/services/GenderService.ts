@@ -2,9 +2,10 @@ import Gender from "../models/Gender";
 
 class GenderService {
     public static async setupGenders(): Promise<void> {
-        Gender.create({ name: "MALE" });
-        Gender.create({ name: "FEMALE"});
-        Gender.create({ name: "OTHER"});
+        
+        Gender.findOrCreate({where: { name: "MALE" }});
+        Gender.findOrCreate({where: { name: "FEMALE"}});
+        Gender.findOrCreate({where: { name: "OTHER"}});
 
     }
 }
