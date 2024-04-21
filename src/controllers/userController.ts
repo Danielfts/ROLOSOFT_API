@@ -1,4 +1,5 @@
-import UserService from "../services/userService";
+import UserDTO from "../dtos/userDTO";
+import UserService from "../services/UserService";
 import { StatusCodes } from "http-status-codes";
 
 
@@ -49,10 +50,11 @@ class UserController {
 
   public static async createUser(req: any, res: any): Promise<void> {
     try {
-        const user = req.body;
+        const user:UserDTO = req.body;
         const createdUser = await UserService.createUser(user);
         res.status(StatusCodes.CREATED).send(createdUser);
     } catch (error:any) {
+      console.log(error.message);
         switch (error.message) {
             case "Invalid email address":
                 res.status(StatusCodes.BAD_REQUEST).send("Invalid email address");
