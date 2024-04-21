@@ -1,4 +1,4 @@
-import UserService from "../service/userService";
+import UserService from "../services/userService";
 import { StatusCodes } from "http-status-codes";
 
 
