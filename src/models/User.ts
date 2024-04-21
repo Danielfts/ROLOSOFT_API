@@ -1,8 +1,10 @@
-import { Model, DataTypes } from "sequelize";
+import { Model, DataTypes, InferAttributes, InferCreationAttributes } from "sequelize";
 import { sequelize } from "../config/db";
 import Gender from "./Gender";
 
-class User extends Model {}
+class User extends Model < InferAttributes<User>, InferCreationAttributes<User>> {
+  
+}
 
 User.init({
   id: {
