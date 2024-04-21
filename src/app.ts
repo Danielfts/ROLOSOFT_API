@@ -28,7 +28,7 @@ app.use(router);
 
 async function main() {
   // await sequelize.drop();
-  await sequelize.sync({ force: true, alter: true });
+  await sequelize.sync({ force: false, alter: true });
   console.log("Connected to DB");
   await setupDatabase();
   console.log("Database set up");
