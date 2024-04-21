@@ -1,7 +1,11 @@
-import { Model, DataTypes } from "sequelize";
+import { Model, DataTypes, InferAttributes, InferCreationAttributes, CreationOptional } from "sequelize";
 import { sequelize } from "../config/db";
+import { UUID } from "crypto";
 
-class Gender extends Model {}
+class Gender extends Model<InferAttributes<Gender>, InferCreationAttributes<Gender>> {
+  declare id: CreationOptional<UUID>;
+  declare name: string;
+}
 Gender.init({
   id: {
     type: DataTypes.UUID,

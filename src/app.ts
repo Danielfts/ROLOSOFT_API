@@ -12,6 +12,7 @@ import express from "express";
 import cors from "cors";
 import router from "./routes/router";
 import { sequelize } from "./config/db";
+import { setupDatabase } from "./utils/dbSetup";
 
 const app = express();
 const port = 5555;
@@ -26,8 +27,10 @@ app.use(express.json());
 app.use(router);
 
 async function main() {
-  await sequelize.sync({ force: false });
+  await sequelize.sync({ force: true, alter: true});
   console.log("Connected to DB");
+  await setupDatabase();
+  console.log("Database set up");
   app.listen(port, () => {
     console.log(`Server is running on port: ${port}. Visit http://localhost:${port} to check the API!`);
   });
