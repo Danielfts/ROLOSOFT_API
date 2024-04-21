@@ -1,5 +1,6 @@
 import UserDTO from "../dtos/userDTO";
 import { UserEntity } from "../entities/userEntity";
+import Gender from "../models/Gender";
 import User from "../models/User";
 import { isValidEmail } from "../utils/inputValidation";
 import bcrypt from "bcryptjs";
@@ -35,26 +36,38 @@ class UserService {
     const salt: string = await bcrypt.genSalt(10);
     const hashedPassword: string = await bcrypt.hash(user.password, salt);
     user.password = hashedPassword;
+
+    let gender: Gender | null;
+
+    gender = await Gender.findOne({
+      where: { name: user.gender}
+    }) 
+
+    if (gender === null) {
+      throw new Error("Gender not found");
+    }
+
     let createdUser = await User.create({
       firstName: user.firstName,
       lastName: user.lastName,
       email: user.email,
       password: user.password,
       birthDate: user.birthDate,
+      gender: gender.id
     });
 
     return createdUser;
   }
 
   public static async logIn(email: string, password: string): Promise<boolean> {
-    const user: any = await User.findOne({ where: { email: email } });
+    const user: User | null = await User.findOne({ where: { email: email } });
     if (!user) {
       throw new Error("User not found");
     }
 
     const isPasswordValid: boolean = await bcrypt.compare(
       password,
-      user.password_token
+      user.password
     );
     if (!isPasswordValid) {
       throw new Error("Invalid password");
