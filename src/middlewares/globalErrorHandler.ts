@@ -13,6 +13,9 @@ interface errJson {
 // TODO : USE INTERFACE FOR ERR
 function globalErrorHandler(err: any, req: Request, res: Response, next: NextFunction) {
   const httpStatusCode = err.httpStatusCode || 500;
+  if (inDevMode) {
+    console.error(err);
+  }
   if (err instanceof ClientError) {
     return res.status(httpStatusCode).json({
       success: false,
@@ -29,7 +32,7 @@ function globalErrorHandler(err: any, req: Request, res: Response, next: NextFun
     });
   }
   return res.status(httpStatusCode).json({
-    succes: false,
+    success: false,
     message: "Internal server error",
     data: err
   });
