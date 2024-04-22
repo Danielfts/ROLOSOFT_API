@@ -1,3 +1,4 @@
+import { NextFunction, Request, Response } from "express";
 import ClientError from "../errors/ClientError";
 import ServerError from "../errors/ServerError";
 
@@ -10,7 +11,7 @@ interface errJson {
     
 }
 // TODO : USE INTERFACE FOR ERR
-function globalErrorHandler(err: any, req: any, res: any, next: any) {
+function globalErrorHandler(err: any, req: Request, res: Response, next: NextFunction) {
   const httpStatusCode = err.httpStatusCode || 500;
   if (err instanceof ClientError) {
     return res.status(httpStatusCode).json({
