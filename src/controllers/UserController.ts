@@ -11,23 +11,23 @@ class UserController {
       const result: {success: boolean, id: string} = await UserService.logIn(email, password);
 
       if (result.success) {
-        res.status(StatusCodes.OK).send({message:"User logged in successfully", id: result.id});
+        res.status(StatusCodes.OK).json({message:"User logged in successfully", id: result.id});
       }
     } catch (error: any) {
       console.error(error.message);
       switch (error.message) {
         case "User not found":
-          res.status(StatusCodes.NOT_FOUND).send({message: "User not found"});
+          res.status(StatusCodes.NOT_FOUND).json({message: "User not found"});
           break;
         case "Invalid password":
-          res.status(StatusCodes.UNAUTHORIZED).send({message: "Invalid password"});
+          res.status(StatusCodes.UNAUTHORIZED).json({message: "Invalid password"});
           break;
         case "Gender not found":
-          res.status(StatusCodes.BAD_REQUEST).send({message: "Gender not found"});
+          res.status(StatusCodes.BAD_REQUEST).json({message: "Gender not found"});
         default:
           res
             .status(StatusCodes.INTERNAL_SERVER_ERROR)
-            .send({message: "Internal Server Error"});
+            .json({message: "Internal Server Error"});
       }
     }
   }
@@ -36,21 +36,21 @@ class UserController {
     const id: string = req.params.id;
     const success: boolean = await UserService.deleteUser(id);
     if (success) {
-      res.status(StatusCodes.OK).send({message: "User deleted successfully"});
+      res.status(StatusCodes.OK).json({message: "User deleted successfully"});
     } else {
-      res.status(StatusCodes.NOT_FOUND).send({message: "User not found"});
+      res.status(StatusCodes.NOT_FOUND).json({message: "User not found"});
     }
   }
 
   public static async getAllUsers(req: Request, res: Response, next: NextFunction): Promise<void> {
     try {
       const users = await UserService.getAllUsers();
-      res.status(StatusCodes.OK).send(users);
+      res.status(StatusCodes.OK).json(users);
     } catch (error:any) {
       console.error(error.message);
       res
         .status(StatusCodes.INTERNAL_SERVER_ERROR)
-        .send({message: "Internal Server Error"});
+        .json({message: "Internal Server Error"});
     }
   }
 
@@ -58,26 +58,26 @@ class UserController {
     try {
       const user: UserDTO = req.body;
       const createdUser = await UserService.createUser(user);
-      res.status(StatusCodes.CREATED).send(createdUser);
+      res.status(StatusCodes.CREATED).json(createdUser);
     } catch (error: any) {
       console.log(error.message);
       switch (error.message) {
         case "Invalid email address":
-          res.status(StatusCodes.BAD_REQUEST).send({message: "Invalid email address"});
+          res.status(StatusCodes.BAD_REQUEST).json({message: "Invalid email address"});
           break;
         case "Email already exists":
-          res.status(StatusCodes.BAD_REQUEST).send({message: "Email already exists"});
+          res.status(StatusCodes.BAD_REQUEST).json({message: "Email already exists"});
           break;
         case "Role not found":
-          res.status(StatusCodes.BAD_REQUEST).send({message: "Role not found"});
+          res.status(StatusCodes.BAD_REQUEST).json({message: "Role not found"});
           break;
         case "Student data is required":
-          res.status(StatusCodes.BAD_REQUEST).send({message: "Student data is required"});
+          res.status(StatusCodes.BAD_REQUEST).json({message: "Student data is required"});
           break;
         default:
           res
             .status(StatusCodes.INTERNAL_SERVER_ERROR)
-            .send({message: "Internal Server Error"});
+            .json({message: "Internal Server Error"});
       }
     }
   }
