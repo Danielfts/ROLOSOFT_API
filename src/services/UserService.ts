@@ -8,6 +8,8 @@ import StudentService from "./StudentService";
 import { sequelize } from "../config/db";
 import Student from "../models/Student";
 import StudentDTO from "../dtos/studentDTO";
+import ClientError from "../errors/ClientError";
+import { StatusCodes } from "http-status-codes";
 
 class UserService {
   public static async deleteUser(id: string): Promise<boolean> {
@@ -15,7 +17,7 @@ class UserService {
     if (deletedRows > 0) {
       return true;
     } else {
-      return false;
+      throw new ClientError(StatusCodes.NOT_FOUND, "User not found", {});
     }
   }
 
@@ -52,7 +54,7 @@ class UserService {
 
   public static async createUser(user: UserDTO): Promise<UserDTO> {
     if (!(await isValidEmail(user.email))) {
-      throw new Error("Invalid email address");
+      throw new ClientError(StatusCodes.BAD_REQUEST, "Invalid email address");
     }
 
     const isUnique: boolean = (await User.findOne({
@@ -61,7 +63,7 @@ class UserService {
       ? false
       : true;
     if (!isUnique) {
-      throw new Error("Email already exists");
+      throw new ClientError(StatusCodes.BAD_REQUEST, "Email already exists");
     }
 
     const salt: string = await bcrypt.genSalt(10);
@@ -75,26 +77,28 @@ class UserService {
     });
 
     if (gender === null) {
-      throw new Error("Gender not found");
+      throw new ClientError(StatusCodes.BAD_REQUEST, "Gender not found");
     }
 
     // CHECK if role is in enum
     if (!(user.role in Roles)) {
-      throw new Error("Role not found");
+      throw new ClientError(StatusCodes.BAD_REQUEST, "Role not found");
     }
 
     const result: UserDTO = await sequelize.transaction(async (t) => {
-      let createdUser = await User.create({
-        firstName: user.firstName,
-        lastName: user.lastName,
-        email: user.email,
-        password: user.password,
-        birthDate: user.birthDate,
-        phone: user.phone,
-        role: user.role,
-        genderId: gender.id,
-      },
-      { transaction: t });
+      let createdUser = await User.create(
+        {
+          firstName: user.firstName,
+          lastName: user.lastName,
+          email: user.email,
+          password: user.password,
+          birthDate: user.birthDate,
+          phone: user.phone,
+          role: user.role,
+          genderId: gender.id,
+        },
+        { transaction: t }
+      );
 
       let userDTO: UserDTO = {
         id: createdUser.id.toString(),
@@ -113,7 +117,11 @@ class UserService {
         if (!user.student) {
           throw new Error("Student data is required");
         }
-        const createdStudent: Student = await StudentService.createStudent(createdUser.id, user.student, t);
+        const createdStudent: Student = await StudentService.createStudent(
+          createdUser.id,
+          user.student,
+          t
+        );
         const studentDTO: StudentDTO = {
           school: createdStudent.school,
           fieldPosition: createdStudent.fieldPosition,
@@ -124,9 +132,9 @@ class UserService {
         };
         userDTO.student = studentDTO;
       }
-      
+
       return userDTO;
-    })
+    });
 
     return result;
   }
@@ -137,7 +145,7 @@ class UserService {
   ): Promise<{ success: boolean; id: string }> {
     const user: User | null = await User.findOne({ where: { email: email } });
     if (!user) {
-      throw new Error("User not found");
+      throw new ClientError(StatusCodes.NOT_FOUND, "User not found");
     }
 
     const isPasswordValid: boolean = await bcrypt.compare(
@@ -145,7 +153,7 @@ class UserService {
       user.password
     );
     if (!isPasswordValid) {
-      throw new Error("Invalid password");
+      throw new ClientError(StatusCodes.BAD_REQUEST, "Invalid password");
     }
     return { success: true, id: user.id.toString() };
   }
