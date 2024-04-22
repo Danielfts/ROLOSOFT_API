@@ -1,5 +1,7 @@
+import StudentDTO from "./studentDTO";
+
 interface UserDTO {
-    id: string | null;
+    id?: string ;
     firstName: string;
     lastName: string;
     email: string;
@@ -7,7 +9,8 @@ interface UserDTO {
     birthDate: Date ;
     gender: string;
     role: string;
-    phone: string | null;
+    phone: string;
+    student?: StudentDTO;
 };
 
 export default UserDTO;

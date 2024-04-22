@@ -14,7 +14,7 @@ class User extends Model < InferAttributes<User, {}>, InferCreationAttributes<Us
   declare birthDate: Date;
   declare Gender: NonAttribute<Gender>;
   declare genderId: ForeignKey<UUID>;
-  declare phone: string | null;
+  declare phone: string;
   declare photo: string | null;
   declare address: ForeignKey<UUID> | null;
   declare role: string;

@@ -1,9 +1,13 @@
 import UserDTO from "../dtos/userDTO";
-import { UserEntity } from "../entities/userEntity";
 import Gender from "../models/Gender";
 import User from "../models/User";
 import { isValidEmail } from "../utils/inputValidation";
 import bcrypt from "bcryptjs";
+import Roles from "../models/Roles";
+import StudentService from "./StudentService";
+import { sequelize } from "../config/db";
+import Student from "../models/Student";
+import StudentDTO from "../dtos/studentDTO";
 
 class UserService {
   public static async deleteUser(id: string): Promise<boolean> {
@@ -30,7 +34,7 @@ class UserService {
         ],
       },
     });
-    const usersDTO: UserDTO[] = users.map( (user: User) => {
+    const usersDTO: UserDTO[] = users.map((user: User) => {
       return {
         id: user.id.toString(),
         firstName: user.firstName,
@@ -41,7 +45,7 @@ class UserService {
         password: "****",
         gender: user.Gender.name,
         role: user.role,
-      }
+      };
     });
     return usersDTO;
   }
@@ -74,33 +78,63 @@ class UserService {
       throw new Error("Gender not found");
     }
 
-    let createdUser = await User.create({
-      firstName: user.firstName,
-      lastName: user.lastName,
-      email: user.email,
-      password: user.password,
-      birthDate: user.birthDate,
-      phone: user.phone,
-      role: user.role,
-      genderId: gender.id,
-    });
-
-    let userDTO: UserDTO = {
-      id: createdUser.id.toString(),
-      firstName: createdUser.firstName,
-      lastName: createdUser.lastName,
-      email: createdUser.email,
-      phone: createdUser.phone,
-      birthDate: createdUser.birthDate,
-      password: "****",
-      gender:(await createdUser.getGender()).name,
-      role: createdUser.role,
+    // CHECK if role is in enum
+    if (!(user.role in Roles)) {
+      throw new Error("Role not found");
     }
 
-    return userDTO;
+    const result: UserDTO = await sequelize.transaction(async (t) => {
+      let createdUser = await User.create({
+        firstName: user.firstName,
+        lastName: user.lastName,
+        email: user.email,
+        password: user.password,
+        birthDate: user.birthDate,
+        phone: user.phone,
+        role: user.role,
+        genderId: gender.id,
+      },
+      { transaction: t });
+
+      let userDTO: UserDTO = {
+        id: createdUser.id.toString(),
+        firstName: createdUser.firstName,
+        lastName: createdUser.lastName,
+        email: createdUser.email,
+        phone: createdUser.phone,
+        birthDate: createdUser.birthDate,
+        password: "****",
+        gender: (await createdUser.getGender()).name,
+        role: createdUser.role,
+      };
+
+      //CREATE A STUDENT
+      if (user.role === Roles.student) {
+        if (!user.student) {
+          throw new Error("Student data is required");
+        }
+        const createdStudent: Student = await StudentService.createStudent(createdUser.id, user.student, t);
+        const studentDTO: StudentDTO = {
+          school: createdStudent.school,
+          fieldPosition: createdStudent.fieldPosition,
+          shirtNumber: createdStudent.shirtNumber,
+          team: createdStudent.team,
+          CURP: createdStudent.CURP,
+          IMSS: createdStudent.IMSS,
+        };
+        userDTO.student = studentDTO;
+      }
+      
+      return userDTO;
+    })
+
+    return result;
   }
 
-  public static async logIn(email: string, password: string): Promise<{success: boolean, id: string}> {
+  public static async logIn(
+    email: string,
+    password: string
+  ): Promise<{ success: boolean; id: string }> {
     const user: User | null = await User.findOne({ where: { email: email } });
     if (!user) {
       throw new Error("User not found");
@@ -113,7 +147,7 @@ class UserService {
     if (!isPasswordValid) {
       throw new Error("Invalid password");
     }
-    return {success: true, id: user.id.toString()};
+    return { success: true, id: user.id.toString() };
   }
 }
 

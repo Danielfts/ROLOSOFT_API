@@ -17,6 +17,8 @@ import { setupDatabase } from "./utils/dbSetup";
 const app = express();
 const port = process.env.PORT;
 
+const force = mode === "development" ? true : false;
+
 app.use(cors({
   origin: "*",
   methods: ["GET", "POST", "PUT", "DELETE"],
@@ -28,7 +30,7 @@ app.use(router);
 
 async function main() {
   // await sequelize.drop();
-  await sequelize.sync({ force: false, alter: true });
+  await sequelize.sync({ force: force});
   console.log("Connected to DB");
   await setupDatabase();
   console.log("Database set up");

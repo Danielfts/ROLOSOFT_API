@@ -67,6 +67,12 @@ class UserController {
         case "Email already exists":
           res.status(StatusCodes.BAD_REQUEST).send({message: "Email already exists"});
           break;
+        case "Role not found":
+          res.status(StatusCodes.BAD_REQUEST).send({message: "Role not found"});
+          break;
+        case "Student data is required":
+          res.status(StatusCodes.BAD_REQUEST).send({message: "Student data is required"});
+          break;
         default:
           res
             .status(StatusCodes.INTERNAL_SERVER_ERROR)
