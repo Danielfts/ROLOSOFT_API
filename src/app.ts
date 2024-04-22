@@ -13,6 +13,7 @@ import cors from "cors";
 import router from "./routes/router";
 import { sequelize } from "./config/db";
 import { setupDatabase } from "./utils/dbSetup";
+import globalErrorHandler from "./middlewares/globalErrorHandler";
 
 const app = express();
 const port = process.env.PORT;
@@ -27,6 +28,7 @@ app.use(cors({
 
 app.use(express.json());
 app.use(router);
+app.use(globalErrorHandler);
 
 async function main() {
   // await sequelize.drop();
