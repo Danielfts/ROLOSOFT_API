@@ -5,7 +5,7 @@ interface UserDTO {
     firstName: string;
     lastName: string;
     email: string;
-    password: string;
+    password?: string;
     birthDate: Date ;
     gender: string;
     role: string;

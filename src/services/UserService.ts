@@ -53,10 +53,11 @@ class UserService {
   }
 
   public static async createUser(user: UserDTO): Promise<UserDTO> {
+    // Validate Email 
     if (!(await isValidEmail(user.email))) {
       throw new ClientError(StatusCodes.BAD_REQUEST, "Invalid email address");
     }
-
+    // Validate Email is unique
     const isUnique: boolean = (await User.findOne({
       where: { email: user.email },
     }))
@@ -65,25 +66,25 @@ class UserService {
     if (!isUnique) {
       throw new ClientError(StatusCodes.BAD_REQUEST, "Email already exists");
     }
-
-    const salt: string = await bcrypt.genSalt(10);
-    const hashedPassword: string = await bcrypt.hash(user.password, salt);
-    user.password = hashedPassword;
-
+    
+    // CHECK GENDER
     let gender: Gender | null;
-
     gender = await Gender.findOne({
       where: { name: user.gender },
     });
-
     if (gender === null) {
       throw new ClientError(StatusCodes.BAD_REQUEST, "Gender not found");
     }
-
+    
     // CHECK if role is in enum
     if (!(user.role in Roles)) {
       throw new ClientError(StatusCodes.BAD_REQUEST, "Role not found");
     }
+
+    // Encrypt Password
+    const salt: string = await bcrypt.genSalt(10);
+    const hashedPassword: string = await bcrypt.hash(user.password!, salt);
+    user.password = hashedPassword;
 
     const result: UserDTO = await sequelize.transaction(async (t) => {
       let createdUser = await User.create(
@@ -91,7 +92,7 @@ class UserService {
           firstName: user.firstName,
           lastName: user.lastName,
           email: user.email,
-          password: user.password,
+          password: user.password!,
           birthDate: user.birthDate,
           phone: user.phone,
           role: user.role,
@@ -107,7 +108,6 @@ class UserService {
         email: createdUser.email,
         phone: createdUser.phone,
         birthDate: createdUser.birthDate,
-        password: "****",
         gender: (await createdUser.getGender()).name,
         role: createdUser.role,
       };
