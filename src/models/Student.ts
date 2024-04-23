@@ -81,6 +81,9 @@ Student.belongsTo(User, {
   onDelete: "CASCADE",
 });
 
-User.hasOne(Student);
+User.hasOne(Student,{
+  foreignKey: {name: "id", allowNull: false},
+  onDelete: "CASCADE"
+});
 
 export default Student;

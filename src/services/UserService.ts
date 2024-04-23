@@ -12,6 +12,7 @@ import ClientError from "../errors/ClientError";
 import { StatusCodes } from "http-status-codes";
 import AdminService from "./AdminService";
 import Admin from "../models/Admin";
+import { UUID } from "crypto";
 
 class UserService {
   public static async deleteUser(id: string): Promise<boolean> {
@@ -21,6 +22,35 @@ class UserService {
     } else {
       throw new ClientError(StatusCodes.NOT_FOUND, "User not found", {});
     }
+  }
+
+  public static async getOneUserDTO(id: UUID): Promise<UserDTO> {
+    const user: User | null = await User.findOne({where: {id: id}, include: [Gender]});
+    if (!user) {
+      throw new ClientError(StatusCodes.NOT_FOUND, "User not found");
+    }
+    const userDTO: UserDTO = {
+      id: user.id.toString(),
+      firstName: user.firstName,
+      lastName: user.lastName,
+      email: user.email,
+      phone: user.phone,
+      birthDate: user.birthDate, 
+      gender: user.Gender.name,
+      role: user.role,
+    };
+
+    switch (user.role) {
+      case Roles.student:
+        const student = await user.getStudent({attributes: {exclude: ["id","createdAt", "updatedAt", "deletedAt"]}});
+        userDTO.student = student;
+        break;
+      case Roles.admin:
+        const admin = await user.getAdmin();
+        userDTO.admin = {INE: admin.INE};
+        break;
+    }
+    return userDTO;
   }
 
   public static async getAllUsers(): Promise<any[]> {
@@ -46,7 +76,6 @@ class UserService {
         email: user.email,
         phone: user.phone,
         birthDate: user.birthDate,
-        password: "****",
         gender: user.Gender.name,
         role: user.role,
       };

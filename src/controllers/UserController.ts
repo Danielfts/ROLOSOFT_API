@@ -66,7 +66,8 @@ class UserController {
     try {
       const user: UserDTO = req.body;
       const createdUser = await UserService.createUser(user);
-      res.status(StatusCodes.CREATED).json(createdUser);
+      const userDTO = await UserService.getOneUserDTO(createdUser.id);
+      res.status(StatusCodes.CREATED).json(userDTO);
     } catch (error: any) {
       next(error);
     }

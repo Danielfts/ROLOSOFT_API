@@ -3,6 +3,8 @@ import { sequelize } from "../config/db";
 import Gender from "./Gender";
 import Address from "./Address";
 import { UUID } from "crypto";
+import Student from "./Student";
+import Admin from "./Admin";
 
 class User extends Model < InferAttributes<User, {}>, InferCreationAttributes<User, {}>> {
 
@@ -21,6 +23,8 @@ class User extends Model < InferAttributes<User, {}>, InferCreationAttributes<Us
 
   //MIXINS
   declare getGender: HasOneGetAssociationMixin<Gender>;
+  declare getStudent: HasOneGetAssociationMixin<Student>;
+  declare getAdmin: HasOneGetAssociationMixin<Admin>;
 
   //Timestamps
   declare createdAt: CreationOptional<Date>;

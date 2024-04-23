@@ -58,6 +58,12 @@ Admin.belongsTo(User, {
     onDelete: "CASCADE",
 });
 
-User.hasOne(Admin);
+User.hasOne(Admin, {
+    foreignKey: {
+        name: "id",
+        allowNull: false,
+    },
+    onDelete: "CASCADE",
+});
 
 export default Admin;
