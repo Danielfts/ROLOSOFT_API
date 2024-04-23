@@ -166,7 +166,7 @@ class UserService {
   public static async logIn(
     email: string,
     password: string
-  ): Promise<{ success: boolean; id: string }> {
+  ): Promise<{ success: boolean; id: string ; role: string}> {
     const user: User | null = await User.findOne({ where: { email: email } });
     if (!user) {
       throw new ClientError(StatusCodes.NOT_FOUND, "User not found");
@@ -179,7 +179,7 @@ class UserService {
     if (!isPasswordValid) {
       throw new ClientError(StatusCodes.BAD_REQUEST, "Invalid password");
     }
-    return { success: true, id: user.id.toString() };
+    return { success: true, id: user.id.toString() , role: user.role};
   }
 }
 
