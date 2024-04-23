@@ -1,6 +1,7 @@
 import {
   CreationOptional,
   DataTypes,
+  ForeignKey,
   InferAttributes,
   InferCreationAttributes,
   Model,
@@ -13,7 +14,7 @@ class Student extends Model<
   InferAttributes<Student>,
   InferCreationAttributes<Student>
 > {
-  declare id: UUID;
+  declare id: ForeignKey<UUID>;
   declare school: string;
   declare fieldPosition: string;
   declare shirtNumber: number;
@@ -76,7 +77,8 @@ Student.init(
 );
 
 Student.belongsTo(User, {
-  foreignKey: "id",
+  foreignKey: {name: "id", allowNull: false},
+  onDelete: "CASCADE",
 });
 
 User.hasOne(Student);

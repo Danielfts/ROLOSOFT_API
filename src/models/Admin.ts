@@ -1,10 +1,11 @@
-import { CreationOptional, DataTypes, InferAttributes, InferCreationAttributes, Model, NonAttribute } from "sequelize";
+import { CreationOptional, DataTypes, ForeignKey, InferAttributes, InferCreationAttributes, Model, NonAttribute } from "sequelize";
 import { sequelize } from "../config/db";
 import User from "./User";
+import { UUID } from "crypto";
 
 class Admin extends Model<InferAttributes<Admin>, InferCreationAttributes<Admin>> {
-    declare id: string;
-    declare ine: string;
+    declare id: ForeignKey<UUID>;
+    declare INE: string;
     declare user: NonAttribute<User>;
 
     declare createdAt: CreationOptional<Date>;
@@ -24,7 +25,7 @@ Admin.init(
             }
         },
 
-        ine: {
+        INE: {
             type: DataTypes.STRING,
             allowNull: false,
         },
@@ -51,9 +52,12 @@ Admin.init(
 
 Admin.belongsTo(User, {
     foreignKey: {
-        name: "user",
+        name: "id",
         allowNull: false,
     },
+    onDelete: "CASCADE",
 });
+
+User.hasOne(Admin);
 
 export default Admin;

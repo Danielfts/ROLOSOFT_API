@@ -10,6 +10,8 @@ import Student from "../models/Student";
 import StudentDTO from "../dtos/studentDTO";
 import ClientError from "../errors/ClientError";
 import { StatusCodes } from "http-status-codes";
+import AdminService from "./AdminService";
+import Admin from "../models/Admin";
 
 class UserService {
   public static async deleteUser(id: string): Promise<boolean> {
@@ -52,7 +54,7 @@ class UserService {
     return usersDTO;
   }
 
-  public static async createUser(user: UserDTO): Promise<UserDTO> {
+  public static async createUser(user: UserDTO): Promise<User> {
     // Validate Email 
     if (!(await isValidEmail(user.email))) {
       throw new ClientError(StatusCodes.BAD_REQUEST, "Invalid email address");
@@ -86,7 +88,7 @@ class UserService {
     const hashedPassword: string = await bcrypt.hash(user.password!, salt);
     user.password = hashedPassword;
 
-    const result: UserDTO = await sequelize.transaction(async (t) => {
+    const result: User = await sequelize.transaction(async (t) => {
       let createdUser = await User.create(
         {
           firstName: user.firstName,
@@ -101,39 +103,32 @@ class UserService {
         { transaction: t }
       );
 
-      let userDTO: UserDTO = {
-        id: createdUser.id.toString(),
-        firstName: createdUser.firstName,
-        lastName: createdUser.lastName,
-        email: createdUser.email,
-        phone: createdUser.phone,
-        birthDate: createdUser.birthDate,
-        gender: (await createdUser.getGender()).name,
-        role: createdUser.role,
-      };
-
       //CREATE A STUDENT
-      if (user.role === Roles.student) {
-        if (!user.student) {
-          throw new Error("Student data is required");
-        }
-        const createdStudent: Student = await StudentService.createStudent(
-          createdUser.id,
-          user.student,
-          t
-        );
-        const studentDTO: StudentDTO = {
-          school: createdStudent.school,
-          fieldPosition: createdStudent.fieldPosition,
-          shirtNumber: createdStudent.shirtNumber,
-          team: createdStudent.team,
-          CURP: createdStudent.CURP,
-          IMSS: createdStudent.IMSS,
-        };
-        userDTO.student = studentDTO;
+      switch (user.role) {
+        case Roles.student:
+          if (!user.student) {
+            throw new ClientError(StatusCodes.BAD_REQUEST,"Student data is required");
+          }
+          const createdStudent: Student = await StudentService.createStudent(
+            createdUser.id,
+            user.student,
+            t
+          );
+          break;
+        case Roles.admin:
+          if (!user.admin) {
+            throw new ClientError(StatusCodes.BAD_REQUEST, "Admin data is required");
+          }
+          const createdAdmin: Admin = await AdminService.createAdmin(
+            createdUser.id,
+            user.admin,
+            t
+          );
+          break;
+        default:
+          throw new ClientError(StatusCodes.NOT_FOUND, "Role not found");
       }
-
-      return userDTO;
+      return createdUser;
     });
 
     return result;

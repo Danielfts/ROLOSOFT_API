@@ -1,3 +1,4 @@
+import adminDTO from "./adminDTO";
 import StudentDTO from "./studentDTO";
 
 interface UserDTO {
@@ -11,6 +12,7 @@ interface UserDTO {
     role: string;
     phone: string;
     student?: StudentDTO;
+    admin?: adminDTO
 };
 
 export default UserDTO;
