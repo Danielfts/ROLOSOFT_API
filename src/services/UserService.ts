@@ -177,7 +177,7 @@ class UserService {
       user.password
     );
     if (!isPasswordValid) {
-      throw new ClientError(StatusCodes.BAD_REQUEST, "Invalid password");
+      throw new ClientError(StatusCodes.UNAUTHORIZED, "Invalid password");
     }
     return { success: true, id: user.id.toString() , role: user.role};
   }
