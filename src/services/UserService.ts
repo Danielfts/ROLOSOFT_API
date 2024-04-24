@@ -24,7 +24,7 @@ class UserService {
     }
   }
 
-  public static async getOneUserDTO(id: UUID): Promise<UserDTO> {
+  public static async getOneUserDTO(id: UUID | string): Promise<UserDTO> {
     const user: User | null = await User.findOne({where: {id: id}, include: [Gender]});
     if (!user) {
       throw new ClientError(StatusCodes.NOT_FOUND, "User not found");

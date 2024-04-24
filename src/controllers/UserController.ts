@@ -4,6 +4,11 @@ import UserService from "../services/UserService";
 import { StatusCodes } from "http-status-codes";
 import jwt from "jsonwebtoken";
 import JSONResponse from "../dtos/JSONResponse";
+import ServerError from "../errors/ServerError";
+import ClientError from "../errors/ClientError";
+import Role from "../models/Roles";
+import { UUID } from "crypto";
+import Roles from "../models/Roles";
 
 class UserController {
   public static async logIn(
@@ -18,13 +23,16 @@ class UserController {
         email,
         password
       );
-      
+      const secret : string  | undefined = process.env.JWT_SECRET;
+      if ( secret === undefined) {
+        throw new ServerError(StatusCodes.INTERNAL_SERVER_ERROR,"Secret is required");
+      }
       if (result.success) {
-        const token:string = jwt.sign({ id: result.id }, process.env.JWT_SECRET!, {expiresIn: "1d"});
+        const token:string = jwt.sign({ userId: result.id }, secret, {expiresIn: "1d"});
         const response: JSONResponse = {
           success: true,
           message: "User logged in successfully",
-          data: { id: result.id, token: token },
+          data: { userId: result.id, token: token },
           
         };
         res
@@ -60,6 +68,8 @@ class UserController {
     next: NextFunction
   ): Promise<void> {
     try {
+      const userId = req.body.me.userId;
+      await UserController.validateUser(userId, Role.admin);
       const users = await UserService.getAllUsers();
       res.status(StatusCodes.OK).json(users);
     } catch (error: any) {
@@ -80,6 +90,14 @@ class UserController {
     } catch (error: any) {
       next(error);
     }
+  }
+
+  public static async validateUser(id: string | UUID, role: Role) {
+    const user = await UserService.getOneUserDTO(id);
+    if (user.role !== role) {
+      throw new ClientError(StatusCodes.FORBIDDEN,"You are not authorized to perform this operation");
+    }
+    return user;
   }
 }
 

@@ -1,9 +1,10 @@
 import { Router } from "express";
 import UserController from "../controllers/UserController";
+import { validateClient } from "../middlewares/clientValidation";
 
 const userRouter = Router();
 
-userRouter.get("/", UserController.getAllUsers);
+userRouter.get("/", validateClient ,UserController.getAllUsers);
 
 userRouter.post("/", UserController.createUser);
 
