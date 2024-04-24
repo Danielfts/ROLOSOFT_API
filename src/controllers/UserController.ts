@@ -11,6 +11,19 @@ import { UUID } from "crypto";
 import Roles from "../models/Roles";
 
 class UserController {
+  static validateToken(
+    req: Request,
+    res: Response,
+    next: NextFunction
+  ) {
+      try {
+        UserController.validateUser(req.body.me.userId);
+        res.status(StatusCodes.OK).json({ success: true, message: "Token is valid" });
+      } catch (error:any) {
+        error = new ClientError(StatusCodes.FORBIDDEN,"Token is invalid");
+        next(error);
+      }
+  }
   public static async logIn(
     req: Request,
     res: Response,
@@ -102,9 +115,9 @@ class UserController {
     }
   }
 
-  public static async validateUser(id: string | UUID, role: Role) {
+  public static async validateUser(id: string | UUID, role?: Role) {
     const user = await UserService.getOneUserDTO(id);
-    if (user.role !== role) {
+    if (role && user.role !== role) {
       throw new ClientError(StatusCodes.FORBIDDEN,"You are not authorized to perform this operation");
     }
     return user;

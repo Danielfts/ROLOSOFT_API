@@ -12,4 +12,6 @@ userRouter.delete("/:id", validateClient, UserController.deleteUser);
 
 userRouter.post("/login", UserController.logIn);
 
+userRouter.post("/validate-token", validateClient, UserController.validateToken);
+
 export default userRouter;
