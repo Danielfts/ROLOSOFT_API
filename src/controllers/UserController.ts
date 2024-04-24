@@ -50,6 +50,10 @@ class UserController {
     next: NextFunction
   ): Promise<void> {
     try {
+      //VALIDATE
+      const userId = req.body.me.userId;
+      await UserController.validateUser(userId, Role.admin);
+      //DELETE USER
       const id: string = req.params.id;
       const success: boolean = await UserService.deleteUser(id);
       if (success) {
@@ -68,8 +72,10 @@ class UserController {
     next: NextFunction
   ): Promise<void> {
     try {
+      //VALIDATE
       const userId = req.body.me.userId;
       await UserController.validateUser(userId, Role.admin);
+      //GET ALL USERS
       const users = await UserService.getAllUsers();
       res.status(StatusCodes.OK).json(users);
     } catch (error: any) {
@@ -83,6 +89,10 @@ class UserController {
     next: NextFunction
   ): Promise<void> {
     try {
+      //VALIDATE
+      const userId = req.body.me.userId;
+      await UserController.validateUser(userId, Role.admin);
+      //CREATE USER
       const user: UserDTO = req.body;
       const createdUser = await UserService.createUser(user);
       const userDTO = await UserService.getOneUserDTO(createdUser.id);

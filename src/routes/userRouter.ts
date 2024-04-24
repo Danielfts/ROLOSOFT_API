@@ -4,11 +4,11 @@ import { validateClient } from "../middlewares/clientValidation";
 
 const userRouter = Router();
 
-userRouter.get("/", validateClient ,UserController.getAllUsers);
+userRouter.get("/", validateClient, UserController.getAllUsers);
 
-userRouter.post("/", UserController.createUser);
+userRouter.post("/", validateClient, UserController.createUser);
 
-userRouter.delete("/:id", UserController.deleteUser);
+userRouter.delete("/:id", validateClient, UserController.deleteUser);
 
 userRouter.post("/login", UserController.logIn);
 
