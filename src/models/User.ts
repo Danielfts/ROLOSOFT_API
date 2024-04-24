@@ -9,6 +9,7 @@ import Admin from "./Admin";
 class User extends Model < InferAttributes<User, {}>, InferCreationAttributes<User, {}>> {
 
   declare id:CreationOptional <UUID>;
+  declare CURP: string;
   declare firstName: string;
   declare lastName: string;
   declare email: string;
@@ -96,6 +97,11 @@ User.init({
   role: {
     type: DataTypes.ENUM("admin", "student"),
     allowNull: false,
+  },
+  CURP: {
+    type: DataTypes.STRING,
+    allowNull: true,
+    unique: true
   }
 }, {
   sequelize,

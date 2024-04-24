@@ -3,6 +3,7 @@ import StudentDTO from "./studentDTO";
 
 interface UserDTO {
     id?: string ;
+    CURP: string;
     firstName: string;
     lastName: string;
     email: string;

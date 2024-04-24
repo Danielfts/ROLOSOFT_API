@@ -11,13 +11,13 @@ import { UUID } from "crypto";
 import Roles from "../models/Roles";
 
 class UserController {
-  static validateToken(
+  static async validateToken(
     req: Request,
     res: Response,
     next: NextFunction
   ) {
       try {
-        UserController.validateUser(req.body.me.userId);
+        await UserController.validateUser(req.body.me.userId);
         res.status(StatusCodes.OK).json({ success: true, message: "Token is valid" });
       } catch (error:any) {
         error = new ClientError(StatusCodes.FORBIDDEN,"Token is invalid");

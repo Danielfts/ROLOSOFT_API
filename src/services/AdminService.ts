@@ -6,13 +6,11 @@ import { Transaction } from "sequelize";
 class AdminService {
   public static async createAdmin(
     userId: UUID,
-    adminDTO: adminDTO,
     t?: Transaction
   ): Promise<Admin> {
     const createdAdmin: Admin = await Admin.create({
       id: userId,
-      INE: adminDTO.INE,
-    });
+    }, { transaction: t });
 
     return createdAdmin;
   }

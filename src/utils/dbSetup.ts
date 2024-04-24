@@ -12,7 +12,7 @@ export async function setupDatabase() {
   const mode = process.env.NODE_ENV;
   await GenderService.setupGenders();
 
-  if (mode === "development") {
+  if (mode === "development" || true) {
     await UserService.createUser({
       firstName: "Admin",
       lastName: "",
@@ -22,7 +22,7 @@ export async function setupDatabase() {
       gender: "MALE",
       phone: "0000000000",
       role: Roles.admin,
-      admin: { INE: "0000000000" },
+      CURP: "AAAAAAAAA",
     });
   }
 }

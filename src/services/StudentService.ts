@@ -16,7 +16,6 @@ class StudentService {
         fieldPosition: student.fieldPosition,
         shirtNumber: student.shirtNumber,
         team: student.team,
-        CURP: student.CURP,
         IMSS: student.IMSS,
       },
       { transaction: t }

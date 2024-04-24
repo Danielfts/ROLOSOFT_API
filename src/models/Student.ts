@@ -19,7 +19,6 @@ class Student extends Model<
   declare fieldPosition: string;
   declare shirtNumber: number;
   declare team: string;
-  declare CURP: string;
   declare IMSS: string;
 
   //Timestamps
@@ -49,9 +48,6 @@ Student.init(
     },
     team: {
       type: DataTypes.UUID,
-    },
-    CURP: {
-      type: DataTypes.STRING,
     },
     IMSS: {
       type: DataTypes.STRING,

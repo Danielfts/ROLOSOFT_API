@@ -5,7 +5,6 @@ import { UUID } from "crypto";
 
 class Admin extends Model<InferAttributes<Admin>, InferCreationAttributes<Admin>> {
     declare id: ForeignKey<UUID>;
-    declare INE: string;
     declare user: NonAttribute<User>;
 
     declare createdAt: CreationOptional<Date>;
@@ -23,11 +22,6 @@ Admin.init(
                 model: User,
                 key: "id",
             }
-        },
-
-        INE: {
-            type: DataTypes.STRING,
-            allowNull: false,
         },
 
         createdAt: {

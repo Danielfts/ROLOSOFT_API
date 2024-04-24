@@ -18,7 +18,7 @@ import globalErrorHandler from "./middlewares/globalErrorHandler";
 const app = express();
 const port = process.env.PORT;
 
-const force = mode === "development" ? true : false;
+let force = mode === "development" ? true : false;
 
 app.use(cors({
   origin: "*",
@@ -29,6 +29,8 @@ app.use(cors({
 app.use(express.json());
 app.use(router);
 app.use(globalErrorHandler);
+
+// force = true;
 
 async function main() {
   // await sequelize.drop();

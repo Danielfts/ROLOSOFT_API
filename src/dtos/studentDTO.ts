@@ -4,7 +4,6 @@ interface StudentDTO {
     fieldPosition: string;
     shirtNumber: number;
     team: string;
-    CURP: string;
     IMSS: string;
 }
 

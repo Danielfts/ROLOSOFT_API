@@ -38,6 +38,7 @@ class UserService {
       birthDate: user.birthDate, 
       gender: user.Gender.name,
       role: user.role,
+      CURP: user.CURP,
     };
 
     switch (user.role) {
@@ -47,7 +48,6 @@ class UserService {
         break;
       case Roles.admin:
         const admin = await user.getAdmin();
-        userDTO.admin = {INE: admin.INE};
         break;
     }
     return userDTO;
@@ -78,6 +78,7 @@ class UserService {
         birthDate: user.birthDate,
         gender: user.Gender.name,
         role: user.role,
+        CURP: user.CURP,
       };
     });
     return usersDTO;
@@ -128,6 +129,7 @@ class UserService {
           phone: user.phone,
           role: user.role,
           genderId: gender.id,
+          CURP: user.CURP,
         },
         { transaction: t }
       );
@@ -145,12 +147,9 @@ class UserService {
           );
           break;
         case Roles.admin:
-          if (!user.admin) {
-            throw new ClientError(StatusCodes.BAD_REQUEST, "Admin data is required");
-          }
+          
           const createdAdmin: Admin = await AdminService.createAdmin(
             createdUser.id,
-            user.admin,
             t
           );
           break;
