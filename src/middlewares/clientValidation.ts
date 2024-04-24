@@ -20,6 +20,7 @@ export function validateClient(req: Request, res: Response, next: NextFunction){
         next();
 
     } catch (error:any) {
+        error = new ClientError(StatusCodes.FORBIDDEN,"Forbidden");
         next(error);
     }
 }
