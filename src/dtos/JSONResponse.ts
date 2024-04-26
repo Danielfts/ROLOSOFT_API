@@ -1,7 +1,7 @@
 interface JSONResponse {
     success: boolean;
     message: string;
-    data: any;
+    data?: any;
     
 }
 export default JSONResponse;
