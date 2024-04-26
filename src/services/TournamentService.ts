@@ -1,13 +1,9 @@
+import tournamentDTO from "../dtos/tournamentDTO";
 import Tournament from "../models/Tournament";
 
 class TournamentService {
-    public static async createTournament(name: string, startDate: Date, endDate: Date, address: string) {
-        return await Tournament.create({
-            name,
-            startDate,
-            endDate,
-            address
-        });
+    public static async createTournament(tournament: tournamentDTO) {
+        return await Tournament.create(tournament);
     }
 
     public static async getTournamentById(id: string) {
