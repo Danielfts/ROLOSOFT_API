@@ -17,7 +17,7 @@ class UserController {
     next: NextFunction
   ) {
       try {
-        await UserController.validateUser(req.body.me.userId);
+        await UserService.validateUser(req.body.me.userId);
         const response : JSONResponse = {success: true, message: "Token is valid", data: null};
         res.status(StatusCodes.OK).json(response);
       } catch (error:any) {
@@ -66,7 +66,7 @@ class UserController {
     try {
       //VALIDATE
       const userId = req.body.me.userId;
-      await UserController.validateUser(userId, Role.admin);
+      await UserService.validateUser(userId, Role.admin);
       //DELETE USER
       const id: string = req.params.id;
       const success: boolean = await UserService.deleteUser(id);
@@ -89,7 +89,7 @@ class UserController {
     try {
       //VALIDATE
       const userId = req.body.me.userId;
-      const user: UserDTO = await UserController.validateUser(userId);
+      const user: UserDTO = await UserService.validateUser(userId);
       //GET USER
       const response: JSONResponse = {success: true, message: "User found", data: user};
       res.status(StatusCodes.OK).json(response);
@@ -107,7 +107,7 @@ class UserController {
     try {
       //VALIDATE
       const userId = req.body.me.userId;
-      await UserController.validateUser(userId, Role.admin);
+      await UserService.validateUser(userId, Role.admin);
       //GET ALL USERS
       const users = await UserService.getAllUsers();
       const response: JSONResponse = {success: true, message: "Users found", data: users};
@@ -125,7 +125,7 @@ class UserController {
     try {
       //VALIDATE
       const userId = req.body.me.userId;
-      await UserController.validateUser(userId, Role.admin);
+      await UserService.validateUser(userId, Role.admin);
       //CREATE USER
       const user: UserDTO = req.body;
       const createdUser = await UserService.createUser(user);
@@ -137,13 +137,7 @@ class UserController {
     }
   }
 
-  public static async validateUser(id: string | UUID, role?: Role) {
-    const user = await UserService.getOneUserDTO(id);
-    if (role && user.role !== role) {
-      throw new ClientError(StatusCodes.FORBIDDEN,"You are not authorized to perform this operation");
-    }
-    return user;
-  }
+  
 }
 
 export default UserController;

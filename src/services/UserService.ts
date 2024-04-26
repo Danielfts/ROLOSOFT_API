@@ -13,6 +13,7 @@ import { StatusCodes } from "http-status-codes";
 import AdminService from "./AdminService";
 import Admin from "../models/Admin";
 import { UUID } from "crypto";
+import Role from "../models/Roles";
 
 class UserService {
   public static async deleteUser(id: string): Promise<boolean> {
@@ -179,6 +180,14 @@ class UserService {
       throw new ClientError(StatusCodes.UNAUTHORIZED, "Invalid password");
     }
     return { success: true, id: user.id.toString() , role: user.role};
+  }
+
+  public static async validateUser(id: string | UUID, role?: Role) {
+    const user = await UserService.getOneUserDTO(id);
+    if (role && user.role !== role) {
+      throw new ClientError(StatusCodes.FORBIDDEN,"You are not authorized to perform this operation");
+    }
+    return user;
   }
 }
 
