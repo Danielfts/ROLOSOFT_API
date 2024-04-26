@@ -14,4 +14,6 @@ userRouter.post("/login", UserController.logIn);
 
 userRouter.get("/validate-token", validateClient, UserController.validateToken);
 
+userRouter.get("/myself", validateClient, UserController.getMyself);
+
 export default userRouter;

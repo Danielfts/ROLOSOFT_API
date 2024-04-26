@@ -18,7 +18,8 @@ class UserController {
   ) {
       try {
         await UserController.validateUser(req.body.me.userId);
-        res.status(StatusCodes.OK).json({ success: true, message: "Token is valid" });
+        const response : JSONResponse = {success: true, message: "Token is valid", data: null};
+        res.status(StatusCodes.OK).json(response);
       } catch (error:any) {
         error = new ClientError(StatusCodes.FORBIDDEN,"Token is invalid");
         next(error);
@@ -70,13 +71,32 @@ class UserController {
       const id: string = req.params.id;
       const success: boolean = await UserService.deleteUser(id);
       if (success) {
+        const response: JSONResponse = {success: true, message: "User deleted successfully", data: null};
         res
           .status(StatusCodes.OK)
-          .json({ message: "User deleted successfully" });
+          .json(response);
       }
     } catch (error) {
       next(error);
     }
+  }
+
+  public static async getMyself(
+    req: Request,
+    res: Response,
+    next: NextFunction
+  ){
+    try {
+      //VALIDATE
+      const userId = req.body.me.userId;
+      const user: UserDTO = await UserController.validateUser(userId);
+      //GET USER
+      const response: JSONResponse = {success: true, message: "User found", data: user};
+      res.status(StatusCodes.OK).json(response);
+    } catch (error: any) {
+      next(error);
+    }
+
   }
 
   public static async getAllUsers(
@@ -90,7 +110,8 @@ class UserController {
       await UserController.validateUser(userId, Role.admin);
       //GET ALL USERS
       const users = await UserService.getAllUsers();
-      res.status(StatusCodes.OK).json(users);
+      const response: JSONResponse = {success: true, message: "Users found", data: users};
+      res.status(StatusCodes.OK).json(response);
     } catch (error: any) {
       next(error);
     }
@@ -109,7 +130,8 @@ class UserController {
       const user: UserDTO = req.body;
       const createdUser = await UserService.createUser(user);
       const userDTO = await UserService.getOneUserDTO(createdUser.id);
-      res.status(StatusCodes.CREATED).json(userDTO);
+      const response : JSONResponse = {success: true, message: "User created successfully", data: userDTO};
+      res.status(StatusCodes.CREATED).json(response);
     } catch (error: any) {
       next(error);
     }
