@@ -1,7 +1,17 @@
-import { Model, DataTypes } from "sequelize";
+import { Model, DataTypes, InferAttributes, InferCreationAttributes, CreationOptional } from "sequelize";
 import { sequelize } from "../config/db";
 
-class Address extends Model {}
+class Address extends Model<InferAttributes<Address>, InferCreationAttributes<Address>> {
+  declare id: CreationOptional<string>;
+  declare address1: string;
+  declare address2: string | null;
+  declare city: string;
+  declare state: string;
+  declare postalCode: string;
+  declare country: string;
+  declare createdAt: Date;
+  declare updatedAt: Date;
+}
 
 Address.init({
   id: {
@@ -32,12 +42,22 @@ Address.init({
   country: {
     type: DataTypes.STRING,
     allowNull: false
+  },
+  createdAt: {
+    type: DataTypes.DATE,
+    allowNull: false,
+    defaultValue: DataTypes.NOW
+  },
+  updatedAt: {
+    type: DataTypes.DATE,
+    allowNull: false,
+    defaultValue: DataTypes.NOW
   }
 }, {
   sequelize,
   modelName: "Address",
   tableName: "Address",
-  timestamps: false // Optional: Sequelize adds `createdAt` and `updatedAt` by default
+  timestamps: true // Optional: Sequelize adds `createdAt` and `updatedAt` by default
 });
 
 export default Address;
