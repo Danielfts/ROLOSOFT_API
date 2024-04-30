@@ -1,3 +1,4 @@
+import addressDTO from "./addressDTO";
 import adminDTO from "./adminDTO";
 import StudentDTO from "./studentDTO";
 
@@ -12,6 +13,7 @@ interface UserDTO {
     gender: string;
     role: string;
     phone: string;
+    address: addressDTO;
     student?: StudentDTO;
     admin?: adminDTO
 };

@@ -16,16 +16,18 @@ class User extends Model < InferAttributes<User, {}>, InferCreationAttributes<Us
   declare password: string;
   declare birthDate: Date;
   declare Gender: NonAttribute<Gender>;
+  declare Address: NonAttribute<Address>;
   declare genderId: ForeignKey<UUID>;
   declare phone: string;
   declare photo: string | null;
-  declare address: ForeignKey<UUID> | null;
+  declare addressId: ForeignKey<UUID> | null;
   declare role: string;
 
   //MIXINS
   declare getGender: HasOneGetAssociationMixin<Gender>;
   declare getStudent: HasOneGetAssociationMixin<Student>;
   declare getAdmin: HasOneGetAssociationMixin<Admin>;
+  declare getAddress: HasOneGetAssociationMixin<Address>;
 
   //Timestamps
   declare createdAt: CreationOptional<Date>;
@@ -70,8 +72,9 @@ User.init({
     type: DataTypes.DATEONLY,
     allowNull: true
   },
-  address: {
+  addressId: {
     type: DataTypes.UUID,
+    allowNull: true,
     references: {
       model: Address,
       key: "id",
@@ -112,12 +115,6 @@ User.init({
 });
 
 // Gender association
-Gender.hasMany(User, {
-  foreignKey: {
-    name: "genderId",
-    allowNull: false
-  }
-});
 
 User.belongsTo(Gender, {
   foreignKey: {
@@ -126,17 +123,16 @@ User.belongsTo(Gender, {
   }
 });
 
-// Address association
-User.hasOne(Address, {
+User.belongsTo(Address, {
   foreignKey: {
-    name: "address"
+    name: "addressId",
+    allowNull: false
   }
 });
 
-Address.belongsTo(User, {
-  foreignKey: {
-    name: "address"
-  }
-});
+Address.hasOne(User, {
+  foreignKey: "addressId"
+})
+
 
 export default User;

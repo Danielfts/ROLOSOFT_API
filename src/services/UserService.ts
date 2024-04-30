@@ -40,6 +40,7 @@ class UserService {
       gender: user.Gender.name,
       role: user.role,
       CURP: user.CURP,
+      address: await user.getAddress(),
     };
 
     switch (user.role) {
@@ -69,7 +70,8 @@ class UserService {
         ],
       },
     });
-    const usersDTO: UserDTO[] = users.map((user: User) => {
+   
+    const usersDTO: UserDTO[] =  users.map( (user: User) => {
       return {
         id: user.id.toString(),
         firstName: user.firstName,
@@ -80,6 +82,14 @@ class UserService {
         gender: user.Gender.name,
         role: user.role,
         CURP: user.CURP,
+        address: {
+          address1: user.Address.address1,
+          address2: user.Address.address2,
+          city: user.Address.city,
+          state: user.Address.state,
+          postalCode: user.Address.postalCode,
+          country: user.Address.country,
+        },
       };
     });
     return usersDTO;
@@ -98,6 +108,11 @@ class UserService {
       : true;
     if (!isUnique) {
       throw new ClientError(StatusCodes.BAD_REQUEST, "Email already exists");
+    }
+
+    // VALIDATE ADDRESS
+    if (!user.address) {
+      throw new ClientError(StatusCodes.BAD_REQUEST, "Address is required");
     }
     
     // CHECK GENDER
@@ -134,6 +149,8 @@ class UserService {
         },
         { transaction: t }
       );
+      //CREATE AN ADDRESS
+      
 
       //CREATE A STUDENT
       switch (user.role) {
@@ -147,8 +164,7 @@ class UserService {
             t
           );
           break;
-        case Roles.admin:
-          
+        case Roles.admin:   
           const createdAdmin: Admin = await AdminService.createAdmin(
             createdUser.id,
             t

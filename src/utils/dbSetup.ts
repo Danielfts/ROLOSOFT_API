@@ -1,10 +1,6 @@
-import Address from "../models/Address";
-import Admin from "../models/Admin";
-import Gender from "../models/Gender";
-import Parent from "../models/Parent";
+
 import Roles from "../models/Roles";
-import Student from "../models/Student";
-import User from "../models/User";
+
 import GenderService from "../services/GenderService";
 import UserService from "../services/UserService";
 
@@ -23,6 +19,14 @@ export async function setupDatabase() {
       phone: "0000000000",
       role: Roles.admin,
       CURP: "AAAAAAAAA",
+      address: {
+        address1: "Calle 1",
+        address2: "Calle 2",
+        city: "Ciudad",
+        state: "Estado",
+        postalCode: "00000",
+        country: "País",
+      }, 
     });
   }
 }

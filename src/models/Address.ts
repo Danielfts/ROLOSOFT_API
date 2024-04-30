@@ -1,5 +1,6 @@
 import { Model, DataTypes, InferAttributes, InferCreationAttributes, CreationOptional } from "sequelize";
 import { sequelize } from "../config/db";
+import User from "./User";
 
 class Address extends Model<InferAttributes<Address>, InferCreationAttributes<Address>> {
   declare id: CreationOptional<string>;
@@ -59,5 +60,7 @@ Address.init({
   tableName: "Address",
   timestamps: true // Optional: Sequelize adds `createdAt` and `updatedAt` by default
 });
+
+
 
 export default Address;
