@@ -189,6 +189,10 @@ class UserService {
     }
     return user;
   }
+
+  public static async getUserByEmail(email: string): Promise<User | null> {
+    return await User.findOne({ where: { email: email } });
+  }
 }
 
 export default UserService;
