@@ -1,20 +1,17 @@
 import { Model, DataTypes, InferAttributes, InferCreationAttributes, CreationOptional, ForeignKey, NonAttribute } from "sequelize";
 import { sequelize } from "../config/db";
 import User from "./User";
-import { UUID } from "crypto";
 
 class Address extends Model<InferAttributes<Address>, InferCreationAttributes<Address>> {
-  declare id: CreationOptional<UUID>;
+  declare id: CreationOptional<string>;
   declare address1: string;
   declare address2: string | null;
   declare city: string;
   declare state: string;
   declare postalCode: string;
   declare country: string;
-  declare createdAt: CreationOptional<Date>;
-  declare updatedAt: CreationOptional<Date>;
-  declare userId: ForeignKey<UUID>;
-  declare User: NonAttribute<User>;
+  declare createdAt: Date;
+  declare updatedAt: Date;
 }
 
 Address.init({
