@@ -14,6 +14,8 @@ import AdminService from "./AdminService";
 import Admin from "../models/Admin";
 import { UUID } from "crypto";
 import Role from "../models/Roles";
+import AddressService from "./AddressService";
+import Address from "../models/Address";
 
 class UserService {
   public static async deleteUser(id: string): Promise<boolean> {
@@ -26,7 +28,10 @@ class UserService {
   }
 
   public static async getOneUserDTO(id: UUID | string): Promise<UserDTO> {
-    const user: User | null = await User.findOne({where: {id: id}, include: [Gender]});
+    const user: User | null = await User.findOne({
+      where: { id: id },
+      include: [Gender, Address],
+    });
     if (!user) {
       throw new ClientError(StatusCodes.NOT_FOUND, "User not found");
     }
@@ -36,15 +41,20 @@ class UserService {
       lastName: user.lastName,
       email: user.email,
       phone: user.phone,
-      birthDate: user.birthDate, 
+      birthDate: user.birthDate,
       gender: user.Gender.name,
       role: user.role,
       CURP: user.CURP,
+      address: user.Address,
     };
 
     switch (user.role) {
       case Roles.student:
-        const student = await user.getStudent({attributes: {exclude: ["id","createdAt", "updatedAt", "deletedAt"]}});
+        const student = await user.getStudent({
+          attributes: {
+            exclude: ["id", "createdAt", "updatedAt", "deletedAt"],
+          },
+        });
         userDTO.student = student;
         break;
       case Roles.admin:
@@ -69,6 +79,7 @@ class UserService {
         ],
       },
     });
+
     const usersDTO: UserDTO[] = users.map((user: User) => {
       return {
         id: user.id.toString(),
@@ -80,13 +91,21 @@ class UserService {
         gender: user.Gender.name,
         role: user.role,
         CURP: user.CURP,
+        address: {
+          address1: user.Address.address1,
+          address2: user.Address.address2,
+          city: user.Address.city,
+          state: user.Address.state,
+          postalCode: user.Address.postalCode,
+          country: user.Address.country,
+        },
       };
     });
     return usersDTO;
   }
 
   public static async createUser(user: UserDTO): Promise<User> {
-    // Validate Email 
+    // Validate Email
     if (!(await isValidEmail(user.email))) {
       throw new ClientError(StatusCodes.BAD_REQUEST, "Invalid email address");
     }
@@ -99,7 +118,9 @@ class UserService {
     if (!isUnique) {
       throw new ClientError(StatusCodes.BAD_REQUEST, "Email already exists");
     }
-    
+
+    // VALIDATE ADDRESS
+
     // CHECK GENDER
     let gender: Gender | null;
     gender = await Gender.findOne({
@@ -108,7 +129,7 @@ class UserService {
     if (gender === null) {
       throw new ClientError(StatusCodes.BAD_REQUEST, "Gender not found");
     }
-    
+
     // CHECK if role is in enum
     if (!(user.role in Roles)) {
       throw new ClientError(StatusCodes.BAD_REQUEST, "Role not found");
@@ -120,6 +141,14 @@ class UserService {
     user.password = hashedPassword;
 
     const result: User = await sequelize.transaction(async (t) => {
+      //CREATE AN ADDRESS
+      let createdAddress: Address | null = null;
+      if (user.address) {
+        createdAddress = await AddressService.createAddress(user.address!, t);
+      }
+
+      //CREATE A USER
+
       let createdUser = await User.create(
         {
           firstName: user.firstName,
@@ -131,6 +160,7 @@ class UserService {
           role: user.role,
           genderId: gender.id,
           CURP: user.CURP,
+          addressId: user.address ? createdAddress?.id : null,
         },
         { transaction: t }
       );
@@ -139,7 +169,10 @@ class UserService {
       switch (user.role) {
         case Roles.student:
           if (!user.student) {
-            throw new ClientError(StatusCodes.BAD_REQUEST,"Student data is required");
+            throw new ClientError(
+              StatusCodes.BAD_REQUEST,
+              "Student data is required"
+            );
           }
           const createdStudent: Student = await StudentService.createStudent(
             createdUser.id,
@@ -148,7 +181,6 @@ class UserService {
           );
           break;
         case Roles.admin:
-          
           const createdAdmin: Admin = await AdminService.createAdmin(
             createdUser.id,
             t
@@ -166,7 +198,7 @@ class UserService {
   public static async logIn(
     email: string,
     password: string
-  ): Promise<{ success: boolean; id: string ; role: string}> {
+  ): Promise<{ success: boolean; id: string; role: string }> {
     const user: User | null = await User.findOne({ where: { email: email } });
     if (!user) {
       throw new ClientError(StatusCodes.NOT_FOUND, "User not found");
@@ -179,13 +211,16 @@ class UserService {
     if (!isPasswordValid) {
       throw new ClientError(StatusCodes.UNAUTHORIZED, "Invalid password");
     }
-    return { success: true, id: user.id.toString() , role: user.role};
+    return { success: true, id: user.id.toString(), role: user.role };
   }
 
   public static async validateUser(id: string | UUID, role?: Role) {
     const user = await UserService.getOneUserDTO(id);
     if (role && user.role !== role) {
-      throw new ClientError(StatusCodes.FORBIDDEN,"You are not authorized to perform this operation");
+      throw new ClientError(
+        StatusCodes.FORBIDDEN,
+        "You are not authorized to perform this operation"
+      );
     }
     return user;
   }

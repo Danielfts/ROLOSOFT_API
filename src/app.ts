@@ -34,7 +34,7 @@ app.use(globalErrorHandler);
 
 async function main() {
   // await sequelize.drop();
-  await sequelize.sync({ force: force});
+  await sequelize.sync({ force: force, alter: force});
   console.log("Connected to DB");
   await setupDatabase();
   console.log("Database set up");
