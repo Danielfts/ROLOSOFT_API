@@ -66,11 +66,11 @@ class UserService {
 
   public static async getAllUsers(): Promise<any[]> {
     const users = await User.findAll({
-      include: [Gender, Address], 
+      include: Gender,
       attributes: {
         exclude: [
           "password",
-          "genderId",
+          "gender",
           "photo",
           "address",
           "createdAt",
@@ -91,14 +91,14 @@ class UserService {
         gender: user.Gender.name,
         role: user.role,
         CURP: user.CURP,
-        address: user.Address && {
+        address: {
           address1: user.Address.address1,
           address2: user.Address.address2,
           city: user.Address.city,
           state: user.Address.state,
           postalCode: user.Address.postalCode,
           country: user.Address.country,
-        } ,
+        },
       };
     });
     return usersDTO;
@@ -141,6 +141,12 @@ class UserService {
     user.password = hashedPassword;
 
     const result: User = await sequelize.transaction(async (t) => {
+      //CREATE AN ADDRESS
+      let createdAddress: Address | null = null;
+      if (user.address) {
+        createdAddress = await AddressService.createAddress(user.address!, t);
+      }
+
       //CREATE A USER
 
       let createdUser = await User.create(
@@ -154,16 +160,10 @@ class UserService {
           role: user.role,
           genderId: gender.id,
           CURP: user.CURP,
+          addressId: user.address ? createdAddress?.id : null,
         },
         { transaction: t }
       );
-
-      //CREATE AN ADDRESS
-      let createdAddress: Address | null = null;
-      if (user.address) {
-        user.address.userId = createdUser.id;
-        createdAddress = await AddressService.createAddress(user.address!, t);
-      }
 
       //CREATE A STUDENT
       switch (user.role) {

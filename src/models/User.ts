@@ -20,6 +20,7 @@ class User extends Model < InferAttributes<User, {}>, InferCreationAttributes<Us
   declare genderId: ForeignKey<UUID>;
   declare phone: string;
   declare photo: string | null;
+  declare addressId: ForeignKey<UUID> | null;
   declare role: string;
 
   //MIXINS
@@ -71,6 +72,14 @@ User.init({
     type: DataTypes.DATEONLY,
     allowNull: true
   },
+  addressId: {
+    type: DataTypes.UUID,
+    allowNull: true,
+    references: {
+      model: Address,
+      key: "id",
+    },
+  },
   genderId: {
     type: DataTypes.UUID,
     references: {
@@ -114,26 +123,15 @@ User.belongsTo(Gender, {
   }
 });
 
-// User.belongsTo(Address, {
-//   foreignKey: {
-//     name: "addressId",
-//     allowNull: false
-//   }
-// });
-
-// Address.hasOne(User, {
-//   foreignKey: "addressId"
-// })
-
-Address.belongsTo(User, {
+User.belongsTo(Address, {
   foreignKey: {
-    name: "userId",
+    name: "addressId",
     allowNull: false
   }
-})
+});
 
-User.hasOne(Address, {
-  foreignKey: "userId"
+Address.hasOne(User, {
+  foreignKey: "addressId"
 })
 
 
