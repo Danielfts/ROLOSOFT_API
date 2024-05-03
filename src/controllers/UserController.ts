@@ -6,8 +6,6 @@ import jwt from "jsonwebtoken";
 import JSONResponse from "../dtos/JSONResponse";
 import ServerError from "../errors/ServerError";
 import ClientError from "../errors/ClientError";
-import Role from "../models/Roles";
-import { UUID } from "crypto";
 import Roles from "../models/Roles";
 
 class UserController {
@@ -66,7 +64,7 @@ class UserController {
     try {
       //VALIDATE
       const userId = req.body.me.userId;
-      await UserService.validateUser(userId, Role.admin);
+      await UserService.validateUser(userId, Roles.admin);
       //DELETE USER
       const id: string = req.params.id;
       const success: boolean = await UserService.deleteUser(id);
@@ -107,7 +105,7 @@ class UserController {
     try {
       //VALIDATE
       const userId = req.body.me.userId;
-      await UserService.validateUser(userId, Role.admin);
+      await UserService.validateUser(userId, Roles.admin);
       //GET ALL USERS
       const users = await UserService.getAllUsers();
       const response: JSONResponse = {success: true, message: "Users found", data: users};
@@ -125,7 +123,7 @@ class UserController {
     try {
       //VALIDATE
       const userId = req.body.me.userId;
-      await UserService.validateUser(userId, Role.admin);
+      await UserService.validateUser(userId, Roles.admin);
       //CREATE USER
       const user: UserDTO = req.body;
       const createdUser = await UserService.createUser(user);
