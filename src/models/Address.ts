@@ -1,4 +1,4 @@
-import { Model, DataTypes, InferAttributes, InferCreationAttributes, CreationOptional } from "sequelize";
+import { Model, DataTypes, InferAttributes, InferCreationAttributes, CreationOptional, ForeignKey, NonAttribute } from "sequelize";
 import { sequelize } from "../config/db";
 import User from "./User";
 import { UUID } from "crypto";
@@ -13,6 +13,8 @@ class Address extends Model<InferAttributes<Address>, InferCreationAttributes<Ad
   declare country: string;
   declare createdAt: CreationOptional<Date>;
   declare updatedAt: CreationOptional<Date>;
+  declare userId: ForeignKey<UUID>;
+  declare User: NonAttribute<User>;
 }
 
 Address.init({
@@ -45,6 +47,14 @@ Address.init({
     type: DataTypes.STRING,
     allowNull: false
   },
+  userId: {
+    type: DataTypes.UUID,
+    references : {
+      model: User,
+      key: "id"
+    }
+  }
+  ,
   createdAt: {
     type: DataTypes.DATE,
     allowNull: false,

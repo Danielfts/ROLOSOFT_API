@@ -8,6 +8,7 @@ interface addressDTO {
     state : string;
     postalCode : string;
     country : string;
+    userId? : UUID
 }
 
 export default addressDTO;
