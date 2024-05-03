@@ -1,5 +1,7 @@
+import { UUID } from "crypto";
+
 interface addressDTO {
-    id? : string;
+    id? : UUID;
     address1 : string;
     address2? : string | null;
     city : string;
