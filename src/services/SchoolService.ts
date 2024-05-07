@@ -6,7 +6,7 @@ import AddressService from "./AddressService";
 import Address from "../models/Address";
 
 class SchoolService {
-    public static async createSchool(school: SchoolDTO) {
+    public static async createSchool(school: SchoolDTO): Promise<SchoolDTO> {
         return await sequelize.transaction<SchoolDTO>(async (t) => {
             const address = await AddressService.createAddress(school.address, t);
             const newSchool = await School.create({ name: school.name, addressId: address.id }, { transaction: t });

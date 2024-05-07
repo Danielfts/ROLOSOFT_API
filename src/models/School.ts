@@ -10,6 +10,11 @@ class School extends Model <InferAttributes<School>, InferCreationAttributes<Sch
   declare Address : NonAttribute<Address>;
 
   declare getAddress: BelongsToGetAssociationMixin<Address>;
+  
+  //Timestamps
+  declare createdAt: CreationOptional<Date>;
+  declare updatedAt: CreationOptional<Date>;
+  declare deletedAt: CreationOptional<Date | null>;
 }
 
 School.init({
@@ -22,18 +27,30 @@ School.init({
     type: DataTypes.STRING,
     allowNull: false
   },
-  addressId:{
+  addressId: {
     type: DataTypes.UUID,
     references: {
       model: Address,
       key: "id",
     },
   },
+  createdAt: {
+    type: DataTypes.DATE,
+  },
+  updatedAt: {
+    type: DataTypes.DATE,
+  },
+  deletedAt: {
+    type: DataTypes.DATE,
+    allowNull: true,
+  }
 }, {
   sequelize,
+  
   tableName: "School",
   modelName: "School",
-  timestamps: false
+  timestamps: true,
+  paranoid: true
 });
 
 // Address association
