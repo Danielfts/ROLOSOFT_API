@@ -16,26 +16,42 @@ class TeamService {
       schoolId: teamDTO.school.id!,
       tournamentId: teamDTO.tournament.id!,
     });
-    if (team !== null) {
-      const result: teamDTO = {
-        id: team!.id,
-        name: team!.name,
-        sponsor: team!.sponsor,
-        school: await team!.getSchool({
-          attributes: { exclude: ["createdAt", "deletedAt", "updatedAt"] },
-        }),
-        tournament: await team!.getTournament({
-          attributes: { exclude: ["createdAt", "deletedAt", "updatedAt"] },
-        }),
-      };
-      return result;
-    } else {
-      throw new ServerError(
-        StatusCodes.INTERNAL_SERVER_ERROR,
-        "Error retrieving team",
-        {}
-      );
-    }
+    const result: teamDTO = {
+      id: team!.id,
+      name: team!.name,
+      sponsor: team!.sponsor,
+      school: await team!.getSchool({
+        attributes: { exclude: ["createdAt", "deletedAt", "updatedAt"] },
+      }),
+      tournament: await team!.getTournament({
+        attributes: { exclude: ["createdAt", "deletedAt", "updatedAt"] },
+      }),
+    };
+    return result;
+  }
+
+  public static async getAllTeams(): Promise<teamDTO[]>{
+    const teams : Team[] = await Team.findAll({include: [School, Tournament]});
+    const teamDTOs : teamDTO[] = teams.map((item) => {
+      const team: teamDTO = {
+        id: item.id,
+        name: item.name,
+        sponsor: item.sponsor,
+        school : {
+          id: item.School.id,
+          name: item.School.name,
+        },
+        tournament: {
+          id: item.Tournament.id,
+          name: item.Tournament.name,
+          startDate: item.Tournament.startDate
+        }
+      }
+      return team;
+    })
+
+    return teamDTOs;
+
   }
 }
 

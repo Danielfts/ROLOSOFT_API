@@ -23,4 +23,10 @@ tournamentRouter.post(
   TeamController.createTeam
 )
 
+tournamentRouter.get(
+  "/teams/",
+  validateClient,
+  TeamController.getAllTeams
+)
+
 export default tournamentRouter;
