@@ -1,8 +1,22 @@
-import { Model, DataTypes } from "sequelize";
+import { Model, DataTypes, InferAttributes, InferCreationAttributes, CreationOptional, NonAttribute, BelongsToGetAssociationMixin } from "sequelize";
 import { sequelize } from "../config/db";
 import Address from "./Address";
+import { UUID } from "crypto";
 
-class School extends Model {}
+class School extends Model <InferAttributes<School>, InferCreationAttributes<School>> {
+  declare id: CreationOptional<UUID>;
+  declare name: string;
+  declare addressId: UUID;
+  declare Address : NonAttribute<Address>;
+
+  declare getAddress: BelongsToGetAssociationMixin<Address>;
+  
+  //Timestamps
+  declare createdAt: CreationOptional<Date>;
+  declare updatedAt: CreationOptional<Date>;
+  declare deletedAt: CreationOptional<Date | null>;
+}
+
 School.init({
   id: {
     type: DataTypes.UUID,
@@ -13,31 +27,38 @@ School.init({
     type: DataTypes.STRING,
     allowNull: false
   },
-  address: {
+  addressId: {
     type: DataTypes.UUID,
     references: {
       model: Address,
       key: "id",
     },
   },
+  createdAt: {
+    type: DataTypes.DATE,
+  },
+  updatedAt: {
+    type: DataTypes.DATE,
+  },
+  deletedAt: {
+    type: DataTypes.DATE,
+    allowNull: true,
+  }
 }, {
   sequelize,
+  
   tableName: "School",
   modelName: "School",
-  timestamps: false
+  timestamps: true,
+  paranoid: true
 });
 
 // Address association
-School.hasOne(Address, {
-  foreignKey: {
-    name: "address"
-  }
+School.belongsTo(Address, {
+  foreignKey: "addressId",
 });
-
-Address.belongsTo(School, {
-  foreignKey: {
-    name: "address"
-  }
+Address.hasOne(School, {
+  foreignKey: "addressId",
 });
 
 export default School;

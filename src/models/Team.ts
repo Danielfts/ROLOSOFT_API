@@ -1,61 +1,108 @@
-import { Model, DataTypes } from "sequelize";
+import {
+  Model,
+  DataTypes,
+  InferAttributes,
+  InferCreationAttributes,
+  CreationOptional,
+  ForeignKey,
+  NonAttribute,
+  BelongsToGetAssociationMixin,
+} from "sequelize";
 import { sequelize } from "../config/db";
 import School from "./School";
 import Phase from "./Phase";
+import { UUID } from "crypto";
+import Tournament from "./Tournament";
+import { allow } from "joi";
 
-class Team extends Model {}
-Team.init({
-  id: {
-    type: DataTypes.UUID,
-    primaryKey: true,
-    defaultValue: DataTypes.UUIDV4
-  },
-  name: {
-    type: DataTypes.STRING,
-    allowNull: false
-  },
-  school: {
-    type: DataTypes.UUID,
-    allowNull: false,
-    references: {
-      model: School,
-      key: "id",
+class Team extends Model<InferAttributes<Team>, InferCreationAttributes<Team>> {
+  declare id: CreationOptional<UUID>;
+  declare name: string;
+  declare sponsor: string;
+  declare schoolId: ForeignKey<UUID>;
+  declare tournamentId: ForeignKey<UUID>;
+  declare points: CreationOptional<number>;
+  // TODO declare phase stuff
+
+  declare School: NonAttribute<School>;
+  declare Tournament: NonAttribute<Tournament>;
+
+  declare getSchool: BelongsToGetAssociationMixin<School>;
+  declare getTournament: BelongsToGetAssociationMixin<Tournament>;
+}
+Team.init(
+  {
+    id: {
+      type: DataTypes.UUID,
+      primaryKey: true,
+      defaultValue: DataTypes.UUIDV4,
+    },
+    name: {
+      type: DataTypes.STRING,
+      allowNull: false,
+    },
+    schoolId: {
+      type: DataTypes.UUID,
+      allowNull: false,
+      unique: "compositeUnique",
+      references: {
+        model: School,
+        key: "id",
+      },
+    },
+    tournamentId: {
+      type: DataTypes.UUID,
+      allowNull: false,
+      unique: "compositeUnique",
+      references: {
+        model: Tournament,
+        key: "id",
+      }
+    },
+    sponsor: {
+      type: DataTypes.STRING,
+      allowNull: true,
+    },
+    // phase: {
+    //   type: DataTypes.UUID,
+    //   allowNull: false,
+    //   references: {
+    //     model: Phase,
+    //     key: "id",
+    //   },
+    // },
+    points: {
+      type: DataTypes.INTEGER,
+      defaultValue: 0,
     },
   },
-  sponsor: {
-    type: DataTypes.STRING,
-    allowNull: true
-  },
-  phase: {
-    type: DataTypes.UUID,
+  {
+    sequelize,
+    tableName: "Team",
+    modelName: "Team",
+  }
+);
+
+Team.belongsTo(School, {
+  foreignKey: {
+    name: "schoolId",
     allowNull: false,
-    references: {
-      model: Phase,
-      key: "id",
-    },
   },
-  points: {
-    type: DataTypes.INTEGER,
-    defaultValue: 0
-  }
-}, {
-  sequelize,
-  tableName: "Team",
-  modelName: "Team"
 });
 
-Team.hasOne(School, {
-  foreignKey: {
-    name: "school",
-    allowNull: false
-  }
+School.hasOne(Team, {
+  foreignKey: "schoolId",
 });
 
-School.belongsTo(Team, {
+Team.belongsTo(Tournament, {
   foreignKey: {
-    name: "school",
-    allowNull: false
-  }
+    name: "tournamentId",
+    allowNull: false,
+  },
+});
+
+Tournament.hasOne(Team, {
+  foreignKey: "tournamentId",
 });
 
 export default Team;

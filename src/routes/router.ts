@@ -1,6 +1,7 @@
 import { Router } from "express";
 import userRouter from "./userRouter";
 import tournamentRouter from "./tournamentRouter";
+import schoolRouter from "./schoolRouter";
 
 const router = Router();
 
@@ -13,5 +14,7 @@ router.get("/", (req, res) => {
 router.use("/users", userRouter);
 
 router.use("/tournaments", tournamentRouter);
+
+router.use("/schools", schoolRouter);
 
 export default router;

@@ -1,6 +1,7 @@
 import { Router } from "express";
 import TournamentController from "../controllers/TournamentController";
 import { validateClient } from "../middlewares/clientValidation";
+import TeamController from "../controllers/TeamController";
 
 const tournamentRouter = Router();
 
@@ -15,5 +16,17 @@ tournamentRouter.post(
   validateClient,
   TournamentController.createTournament
 );
+
+tournamentRouter.post(
+  "/teams/",
+  validateClient,
+  TeamController.createTeam
+)
+
+tournamentRouter.get(
+  "/teams/",
+  validateClient,
+  TeamController.getAllTeams
+)
 
 export default tournamentRouter;
