@@ -29,7 +29,7 @@ class TeamService {
       include: [Tournament, School],
     });
     if (result == null) {
-      throw new ClientError(StatusCodes.NOT_FOUND, "User not found", {});
+      throw new ClientError(StatusCodes.NOT_FOUND, "Team not found", {});
     }
     const resultDTO = TeamService.mapTeam(result);
     return resultDTO;
