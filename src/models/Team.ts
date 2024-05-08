@@ -14,6 +14,7 @@ import Phase from "./Phase";
 import { UUID } from "crypto";
 import Tournament from "./Tournament";
 import { allow } from "joi";
+import Student from "./Student";
 
 class Team extends Model<InferAttributes<Team>, InferCreationAttributes<Team>> {
   declare id: CreationOptional<UUID>;
@@ -57,7 +58,7 @@ Team.init(
       references: {
         model: Tournament,
         key: "id",
-      }
+      },
     },
     sponsor: {
       type: DataTypes.STRING,
@@ -104,5 +105,7 @@ Team.belongsTo(Tournament, {
 Tournament.hasOne(Team, {
   foreignKey: "tournamentId",
 });
+
+
 
 export default Team;

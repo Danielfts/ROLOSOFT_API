@@ -8,15 +8,15 @@ import { UUID } from "crypto";
 import ClientError from "../errors/ClientError";
 
 class TeamService {
-  private static mapTeam(team: Team): teamDTO {
+  public static mapTeam(team: Team): teamDTO {
     const dto: teamDTO = {
       name: team.name,
       sponsor: team.sponsor,
-      school: {
+      school: team.School && {
         id: team.School.id,
         name: team.School.name,
       },
-      tournament: {
+      tournament: team.Tournament && {
         id: team.Tournament.id,
         name: team.Tournament.name,
       },

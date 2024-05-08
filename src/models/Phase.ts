@@ -1,7 +1,13 @@
-import { Model, DataTypes } from "sequelize";
+import { Model, DataTypes, InferAttributes, InferCreationAttributes, CreationOptional } from "sequelize";
 import { sequelize } from "../config/db";
+import { UUID } from "crypto";
 
-class Phase extends Model {}
+class Phase extends Model <InferAttributes<Phase>, InferCreationAttributes<Phase>> {
+  declare id: CreationOptional<UUID>;
+  declare name: string;
+  declare startDate: Date;
+  declare endDate: Date
+}
 Phase.init({
   id: {
     type: DataTypes.UUID,
@@ -13,11 +19,11 @@ Phase.init({
     allowNull: false
   },
   startDate: {
-    type: DataTypes.DATE,
+    type: DataTypes.DATEONLY,
     allowNull: false
   },
   endDate: {
-    type: DataTypes.DATE,
+    type: DataTypes.DATEONLY,
     allowNull: false
   }
 }, {

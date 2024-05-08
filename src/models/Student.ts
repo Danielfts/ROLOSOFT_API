@@ -5,10 +5,12 @@ import {
   InferAttributes,
   InferCreationAttributes,
   Model,
+  NonAttribute,
 } from "sequelize";
 import { sequelize } from "../config/db";
 import User from "./User";
 import { UUID } from "crypto";
+import Team from "./Team";
 
 class Student extends Model<
   InferAttributes<Student>,
@@ -18,8 +20,11 @@ class Student extends Model<
   declare school: string;
   declare fieldPosition: string;
   declare shirtNumber: number;
-  declare team: string;
   declare IMSS: string;
+
+  declare teamId: ForeignKey<UUID>;
+
+  declare Team: NonAttribute<Team>;
 
   //Timestamps
   declare createdAt: CreationOptional<Date>;
@@ -46,8 +51,12 @@ Student.init(
     shirtNumber: {
       type: DataTypes.INTEGER,
     },
-    team: {
+    teamId: {
       type: DataTypes.UUID,
+      references: {
+        model: Team,
+        key: "id",
+      },
     },
     IMSS: {
       type: DataTypes.STRING,
@@ -73,13 +82,24 @@ Student.init(
 );
 
 Student.belongsTo(User, {
-  foreignKey: {name: "id", allowNull: false},
+  foreignKey: { name: "id", allowNull: false },
   onDelete: "CASCADE",
 });
 
-User.hasOne(Student,{
-  foreignKey: {name: "id", allowNull: false},
-  onDelete: "CASCADE"
+User.hasOne(Student, {
+  foreignKey: { name: "id", allowNull: false },
+  onDelete: "CASCADE",
+});
+
+Student.belongsTo(Team, {
+  foreignKey: {
+    name: "teamId",
+    allowNull: false,
+  },
+});
+
+Team.hasMany(Student, {
+  foreignKey: "teamId",
 });
 
 export default Student;

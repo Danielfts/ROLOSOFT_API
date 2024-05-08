@@ -16,6 +16,7 @@ import { UUID } from "crypto";
 import Role from "../models/Roles";
 import AddressService from "./AddressService";
 import Address from "../models/Address";
+import Team from "../models/Team";
 
 class UserService {
   public static async deleteUser(id: string): Promise<boolean> {
@@ -30,7 +31,7 @@ class UserService {
   public static async getOneUserDTO(id: UUID | string): Promise<UserDTO> {
     const user: User | null = await User.findOne({
       where: { id: id },
-      include: [Gender, Address],
+      include: [Gender],
     });
     if (!user) {
       throw new ClientError(StatusCodes.NOT_FOUND, "User not found");
@@ -45,17 +46,20 @@ class UserService {
       gender: user.Gender.name,
       role: user.role,
       CURP: user.CURP,
-      address: user.Address,
+      address: await user.getAddress({
+        attributes: { exclude: ["createdAt", "updatedAt", "deletedAt"] },
+      }),
     };
 
     switch (user.role) {
       case Roles.student:
         const student = await user.getStudent({
+          include: [Team],
           attributes: {
             exclude: ["id", "createdAt", "updatedAt", "deletedAt"],
           },
         });
-        userDTO.student = student;
+        userDTO.student = StudentService.mapStudent(student);
         break;
       case Roles.admin:
         const admin = await user.getAdmin();
@@ -66,13 +70,12 @@ class UserService {
 
   public static async getAllUsers(): Promise<any[]> {
     const users = await User.findAll({
-      include: Gender,
+      include: [Gender, Address],
       attributes: {
         exclude: [
           "password",
           "gender",
           "photo",
-          "address",
           "createdAt",
           "updatedAt",
           "deletedAt",
