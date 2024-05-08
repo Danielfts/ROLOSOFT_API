@@ -23,8 +23,10 @@ class Team extends Model<InferAttributes<Team>, InferCreationAttributes<Team>> {
   declare schoolId: ForeignKey<UUID>;
   declare tournamentId: ForeignKey<UUID>;
   declare points: CreationOptional<number>;
+  declare phaseId: CreationOptional<ForeignKey<UUID>>;
   // TODO declare phase stuff
 
+  declare Phase: NonAttribute<Phase>;
   declare School: NonAttribute<School>;
   declare Tournament: NonAttribute<Tournament>;
 
@@ -64,14 +66,14 @@ Team.init(
       type: DataTypes.STRING,
       allowNull: true,
     },
-    // phase: {
-    //   type: DataTypes.UUID,
-    //   allowNull: false,
-    //   references: {
-    //     model: Phase,
-    //     key: "id",
-    //   },
-    // },
+    phaseId: {
+      type: DataTypes.UUID,
+      allowNull: false,
+      references: {
+        model: Phase,
+        key: "id",
+      },
+    },
     points: {
       type: DataTypes.INTEGER,
       defaultValue: 0,
@@ -106,6 +108,10 @@ Tournament.hasOne(Team, {
   foreignKey: "tournamentId",
 });
 
+Team.belongsTo(Phase, {
+  foreignKey: { name: "phaseId", allowNull: true },
+});
 
+Phase.hasMany(Team, { foreignKey: "phaseId" });
 
 export default Team;
