@@ -29,4 +29,11 @@ tournamentRouter.get(
   TeamController.getAllTeams
 )
 
+
+tournamentRouter.get(
+  "/teams/:id",
+  validateClient,
+  TeamController.getOneTeam,
+)
+
 export default tournamentRouter;
