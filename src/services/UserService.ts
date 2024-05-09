@@ -66,7 +66,7 @@ class UserService {
 
   public static async getAllUsers(): Promise<any[]> {
     const users = await User.findAll({
-      include: Gender,
+      include: [Gender, Address],
       attributes: {
         exclude: [
           "password",

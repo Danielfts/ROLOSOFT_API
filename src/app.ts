@@ -30,7 +30,7 @@ app.use(express.json());
 app.use(router);
 app.use(globalErrorHandler);
 
-// force = true;
+force = true;
 
 async function main() {
   // await sequelize.drop();
