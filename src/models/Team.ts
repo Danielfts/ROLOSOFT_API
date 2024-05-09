@@ -64,11 +64,11 @@ Team.init(
     },
     sponsor: {
       type: DataTypes.STRING,
-      allowNull: true,
+      allowNull: false,
     },
     phaseId: {
       type: DataTypes.UUID,
-      allowNull: false,
+      allowNull: true,
       references: {
         model: Phase,
         key: "id",

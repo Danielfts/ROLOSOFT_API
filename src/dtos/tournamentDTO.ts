@@ -6,7 +6,7 @@ interface tournamentDTO {
     name: string;
     startDate: Date;
     endDate: Date;
-    address: addressDTO;
+    address?: addressDTO;
 }
 
 export default tournamentDTO;

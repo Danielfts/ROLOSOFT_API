@@ -1,5 +1,6 @@
-import { Model, DataTypes, InferAttributes, InferCreationAttributes, CreationOptional } from "sequelize";
+import { Model, DataTypes, InferAttributes, InferCreationAttributes, CreationOptional, NonAttribute, ForeignKey, BelongsToGetAssociationMixin } from "sequelize";
 import { sequelize } from "../config/db";
+import Tournament from "./Tournament";
 import { UUID } from "crypto";
 
 class Phase extends Model <InferAttributes<Phase>, InferCreationAttributes<Phase>> {
@@ -7,6 +8,10 @@ class Phase extends Model <InferAttributes<Phase>, InferCreationAttributes<Phase
   declare name: string;
   declare startDate: Date;
   declare endDate: Date
+  declare Tournament: NonAttribute<Tournament>;
+  declare tournamentId: ForeignKey<UUID>;
+
+  declare getTournament : BelongsToGetAssociationMixin<Tournament>; 
 }
 Phase.init({
   id: {
@@ -25,6 +30,13 @@ Phase.init({
   endDate: {
     type: DataTypes.DATEONLY,
     allowNull: false
+  },
+  tournamentId: {
+    type: DataTypes.UUID,
+    references: {
+      model: Tournament,
+      key: "id"
+    }
   }
 }, {
   sequelize,

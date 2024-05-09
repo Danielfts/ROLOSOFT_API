@@ -2,9 +2,11 @@ import { Router } from "express";
 import TournamentController from "../controllers/TournamentController";
 import { validateClient } from "../middlewares/clientValidation";
 import TeamController from "../controllers/TeamController";
+import PhaseController from "../controllers/PhaseController";
 
 const tournamentRouter = Router();
 
+// TOURNAMENTS
 tournamentRouter.get(
   "/",
   validateClient,
@@ -17,6 +19,8 @@ tournamentRouter.post(
   TournamentController.createTournament
 );
 
+//TEAMS
+//REFACTOR TEAMS ENDPOINTS
 tournamentRouter.post(
   "/teams/",
   validateClient,
@@ -34,6 +38,13 @@ tournamentRouter.get(
   "/teams/:id",
   validateClient,
   TeamController.getOneTeam,
+)
+
+//PHASES
+tournamentRouter.post(
+  "/:tournamentId/phases",
+  validateClient,
+  PhaseController.createPhase
 )
 
 export default tournamentRouter;

@@ -45,7 +45,7 @@ class TournamentService {
     const result: Tournament = await sequelize.transaction<Tournament>(
       async (t) => {
         const address = await AddressService.createAddress(
-          tournament.address,
+          tournament.address!,
           t
         );
         const createdTournament = await Tournament.create(

@@ -1,17 +1,30 @@
-import { Model, DataTypes } from "sequelize";
+import { Model, DataTypes, InferAttributes, InferCreationAttributes, ForeignKey, CreationAttributes, CreationOptional, NonAttribute } from "sequelize";
 import { sequelize } from "../config/db";
 import Team from "./Team";
 import Address from "./Address";
 import Phase from "./Phase";
+import { UUID } from "crypto";
+import Tournament from "./Tournament";
 
-class Match extends Model {}
+class Match extends Model<InferAttributes<Match>, InferCreationAttributes<Match>> {
+  declare id: UUID;
+  declare teamAId: ForeignKey<UUID>;
+  declare teamBId: ForeignKey<UUID>;
+  declare startDate: Date;
+  declare endDate: CreationOptional<Date>;
+  declare phaseId: ForeignKey<UUID>;
+  declare addressId: ForeignKey<UUID>
+
+  declare Phase : NonAttribute<Phase>;
+  declare Address: NonAttribute<Address>; 
+}
 Match.init({
   id: {
     type: DataTypes.UUID,
     primaryKey: true,
     defaultValue: DataTypes.UUIDV4
   },
-  teamA: {
+  teamAId: {
     type: DataTypes.UUID,
     allowNull: false,
     references: {
@@ -19,7 +32,7 @@ Match.init({
       key: "id",
     },
   },
-  teamB: {
+  teamBId: {
     type: DataTypes.UUID,
     allowNull: false,
     references: {
@@ -35,7 +48,7 @@ Match.init({
     type: DataTypes.DATE,
     allowNull: false
   },
-  phase: {
+  phaseId: {
     type: DataTypes.UUID,
     allowNull: false,
     references: {
@@ -43,7 +56,7 @@ Match.init({
       key: "id",
     },
   },
-  address: {
+  addressId: {
     type: DataTypes.UUID,
     allowNull: true,
     references: {
@@ -57,5 +70,25 @@ Match.init({
   modelName: "Match",
   timestamps: false
 });
+
+Match.belongsTo(Phase, {
+  foreignKey: {
+    name: "phaseId",
+    allowNull: false
+  }
+})
+
+Phase.hasMany(Match, {
+  foreignKey: {
+    name: "phaseId"
+  }
+})
+
+Match.belongsTo(Tournament, {
+  foreignKey: {
+    name: "tournamentId",
+    allowNull: false
+  }
+})
 
 export default Match;
