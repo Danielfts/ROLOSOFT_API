@@ -33,6 +33,7 @@ Phase.init({
   },
   tournamentId: {
     type: DataTypes.UUID,
+    allowNull: false,
     references: {
       model: Tournament,
       key: "id"
@@ -44,5 +45,15 @@ Phase.init({
   modelName: "Phase",
   timestamps: false
 });
+
+Phase.belongsTo(Tournament, {
+  foreignKey: "tournamentId"
+});
+
+Tournament.hasMany(Phase, {
+  foreignKey: "tournamentId"
+});
+
+
 
 export default Phase;
