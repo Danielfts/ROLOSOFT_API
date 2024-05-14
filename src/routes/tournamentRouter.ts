@@ -47,4 +47,10 @@ tournamentRouter.post(
   PhaseController.createPhase
 )
 
+tournamentRouter.get(
+  "/:tournamentId/phases",
+  validateClient,
+  PhaseController.getAllPhases
+)
+
 export default tournamentRouter;

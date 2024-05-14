@@ -7,6 +7,30 @@ import JSONResponse from "../dtos/JSONResponse";
 import { StatusCodes } from "http-status-codes";
 
 class PhaseController {
+  static async getAllPhases(
+    req: Request,
+    res: Response,
+    next: NextFunction
+  ) {
+    try {
+      //VALIDATE
+      const userId = req.body.me.userId;
+      await UserService.validateUser(userId);
+
+      const tournamentId: string = req.params.tournamentId;
+      const result: phaseDTO[] = await PhaseService.getTournamentPhases(tournamentId);
+      const response: JSONResponse = {
+        success: true,
+        message: "Phases retrieved successfully",
+        data: result,
+      };
+      res.status(StatusCodes.OK).json(response);
+    } catch (error) {
+      next(error);
+    }
+    
+
+  }
   public static async createPhase(
     req: Request,
     res: Response,
