@@ -20,6 +20,7 @@ Phase.init({
     defaultValue: DataTypes.UUIDV4
   },
   name: {
+    unique: "phase_tournament_unique",
     type: DataTypes.STRING,
     allowNull: false
   },
@@ -32,6 +33,7 @@ Phase.init({
     allowNull: false
   },
   tournamentId: {
+    unique: "phase_tournament_unique",
     type: DataTypes.UUID,
     allowNull: false,
     references: {
