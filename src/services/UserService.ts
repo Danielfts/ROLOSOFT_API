@@ -110,13 +110,23 @@ class UserService {
       throw new ClientError(StatusCodes.BAD_REQUEST, "Invalid email address");
     }
     // Validate Email is unique
-    const isUnique: boolean = (await User.findOne({
+    const emailIsUnique: boolean = (await User.findOne({
       where: { email: user.email },
     }))
       ? false
       : true;
-    if (!isUnique) {
+    if (!emailIsUnique) {
       throw new ClientError(StatusCodes.BAD_REQUEST, "Email already exists");
+    }
+
+    // Validate CURP is unique
+    const CURPIsUnique: boolean = (await User.findOne({
+      where: { CURP: user.CURP },
+    }))
+      ? false
+      : true;
+    if (!CURPIsUnique) {
+      throw new ClientError(StatusCodes.BAD_REQUEST, "CURP already exists");
     }
 
     // VALIDATE ADDRESS
