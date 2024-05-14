@@ -91,7 +91,7 @@ class UserService {
         gender: user.Gender.name,
         role: user.role,
         CURP: user.CURP,
-        address: {
+        address: user.Address && {
           address1: user.Address.address1,
           address2: user.Address.address2,
           city: user.Address.city,
