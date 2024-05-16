@@ -10,6 +10,7 @@ import ClientError from "../errors/ClientError";
 class TeamService {
   public static mapTeam(team: Team): teamDTO {
     const dto: teamDTO = {
+      id: team.id,
       name: team.name,
       sponsor: team.sponsor,
       school: team.School && {

@@ -17,4 +17,6 @@ router.use("/tournaments", tournamentRouter);
 
 router.use("/schools", schoolRouter);
 
+
+
 export default router;

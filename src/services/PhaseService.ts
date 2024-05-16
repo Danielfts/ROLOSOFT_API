@@ -3,6 +3,8 @@ import Phase from "../models/Phase";
 import SoccerStages from "../models/SoccerStages";
 import phaseDTO from "../dtos/phaseDTO";
 import Tournament from "../models/Tournament";
+import ClientError from "../errors/ClientError";
+import { StatusCodes } from "http-status-codes";
 
 class PhaseService {
   static async getTournamentPhases(tournamentId: string): Promise<phaseDTO[]> {
@@ -29,7 +31,12 @@ class PhaseService {
 
     return dtos;
   }
+
   public static async createPhase(phase: phaseDTO) : Promise<phaseDTO>{
+    if (!(phase.name in SoccerStages)){
+      throw new ClientError(StatusCodes.BAD_REQUEST, "Invalid phase name", {})
+    }
+
     const result: Phase | null = await Phase.create({
       tournamentId : phase.tournament.id!,
       name: phase.name,
@@ -39,6 +46,27 @@ class PhaseService {
     const tournament = await result.getTournament({attributes: {
       exclude: ["createdAt", "updatedAt", "deletedAt"]
     }});
+    const dto: phaseDTO = {
+      id: result.id,
+      name: result.name,
+      startDate: result.startDate,
+      endDate: result.endDate,
+      tournament: tournament
+    }
+
+    return dto;
+  }
+
+  public static async getOnePhase(id: UUID): Promise<phaseDTO>{
+    const result: Phase | null = await Phase.findByPk(id);
+    if (result == null){
+      throw new ClientError(StatusCodes.NOT_FOUND, "Phase not found", {});
+    }
+
+    const tournament = await result.getTournament({attributes: {
+      exclude: ["createdAt", "updatedAt", "deletedAt"]
+    }});
+    
     const dto: phaseDTO = {
       id: result.id,
       name: result.name,

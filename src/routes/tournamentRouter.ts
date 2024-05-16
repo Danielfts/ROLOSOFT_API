@@ -3,6 +3,7 @@ import TournamentController from "../controllers/TournamentController";
 import { validateClient } from "../middlewares/clientValidation";
 import TeamController from "../controllers/TeamController";
 import PhaseController from "../controllers/PhaseController";
+import MatchController from "../controllers/MatchController";
 
 const tournamentRouter = Router();
 
@@ -51,6 +52,13 @@ tournamentRouter.get(
   "/:tournamentId/phases",
   validateClient,
   PhaseController.getAllPhases
+)
+
+//MATCHES
+tournamentRouter.post(
+  "/:tournamentId/phases/:phaseId/matches",
+  validateClient,
+  MatchController.createMatch
 )
 
 export default tournamentRouter;
