@@ -18,7 +18,6 @@ import Student from "./Student";
 
 class Team extends Model<InferAttributes<Team>, InferCreationAttributes<Team>> {
   declare id: CreationOptional<UUID>;
-  declare name: string;
   declare sponsor: string;
   declare schoolId: ForeignKey<UUID>;
   declare tournamentId: ForeignKey<UUID>;
@@ -39,10 +38,6 @@ Team.init(
       type: DataTypes.UUID,
       primaryKey: true,
       defaultValue: DataTypes.UUIDV4,
-    },
-    name: {
-      type: DataTypes.STRING,
-      allowNull: false,
     },
     schoolId: {
       type: DataTypes.UUID,

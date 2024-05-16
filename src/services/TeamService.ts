@@ -11,7 +11,6 @@ class TeamService {
   public static mapTeam(team: Team): teamDTO {
     const dto: teamDTO = {
       id: team.id,
-      name: team.name,
       sponsor: team.sponsor,
       school: team.School && {
         id: team.School.id,
@@ -40,14 +39,12 @@ class TeamService {
   public static async createTeam(teamDTO: teamDTO): Promise<teamDTO> {
     TeamService.validateTeam(teamDTO);
     const team: Team = await Team.create({
-      name: teamDTO.name,
       sponsor: teamDTO.sponsor,
       schoolId: teamDTO.school.id!,
       tournamentId: teamDTO.tournament.id!,
     });
     const result: teamDTO = {
       id: team!.id,
-      name: team!.name,
       sponsor: team!.sponsor,
       school: await team!.getSchool({
         attributes: { exclude: ["createdAt", "deletedAt", "updatedAt"] },
@@ -64,7 +61,6 @@ class TeamService {
     const teamDTOs: teamDTO[] = teams.map((item) => {
       const team: teamDTO = {
         id: item.id,
-        name: item.name,
         sponsor: item.sponsor,
         school: {
           id: item.School.id,

@@ -4,7 +4,6 @@ import tournamentDTO from "./tournamentDTO";
 
 interface teamDTO {
     id?: UUID
-    name: string,
     sponsor: string,
     school: {
         id: UUID,
