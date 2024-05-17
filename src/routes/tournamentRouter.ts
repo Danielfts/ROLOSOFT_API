@@ -5,6 +5,7 @@ import TeamController from "../controllers/TeamController";
 import PhaseController from "../controllers/PhaseController";
 import MatchController from "../controllers/MatchController";
 import SchoolController from "../controllers/SchoolController";
+import UserController from "../controllers/UserController";
 
 const tournamentRouter = Router();
 
@@ -56,6 +57,14 @@ tournamentRouter.get(
   "/:tournamentId/schools",
   validateClient,
   SchoolController.getSchoolsByTournament
+)
+
+//TOURNAMENT STUDENTS
+
+tournamentRouter.get(
+  "/:tournamentId/players",
+  validateClient,
+  UserController.getStudentsByTournament
 )
 
 //PHASES

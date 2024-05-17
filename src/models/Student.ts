@@ -24,6 +24,7 @@ class Student extends Model<
   declare teamId: ForeignKey<UUID | null>;
 
   declare Team: NonAttribute<Team>;
+  declare User: NonAttribute<User>;
 
   //Timestamps
   declare createdAt: CreationOptional<Date>;
