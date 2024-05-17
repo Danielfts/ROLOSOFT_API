@@ -4,6 +4,7 @@ import { validateClient } from "../middlewares/clientValidation";
 import TeamController from "../controllers/TeamController";
 import PhaseController from "../controllers/PhaseController";
 import MatchController from "../controllers/MatchController";
+import SchoolController from "../controllers/SchoolController";
 
 const tournamentRouter = Router();
 
@@ -22,23 +23,39 @@ tournamentRouter.post(
 
 //TEAMS
 //REFACTOR TEAMS ENDPOINTS
+// tournamentRouter.post(
+//   "/teams/",
+//   validateClient,
+//   TeamController.createTeam
+// )
+
+// tournamentRouter.get(
+//   "/teams/",
+//   validateClient,
+//   TeamController.getAllTeams
+// )
+
+
+// tournamentRouter.get(
+//   "/teams/:id",
+//   validateClient,
+//   TeamController.getOneTeam,
+// )
+
+// TOURNAMENT SCHOOLS
+// Register a school in a tournament
 tournamentRouter.post(
-  "/teams/",
+  "/:tournamentId/schools",
   validateClient,
-  TeamController.createTeam
+  // TeamController.createTeam
+  SchoolController.registerSchoolInTournament
 )
 
+// Get all schools in a tournament
 tournamentRouter.get(
-  "/teams/",
+  "/:tournamentId/schools",
   validateClient,
-  TeamController.getAllTeams
-)
-
-
-tournamentRouter.get(
-  "/teams/:id",
-  validateClient,
-  TeamController.getOneTeam,
+  SchoolController.getSchoolsByTournament
 )
 
 //PHASES

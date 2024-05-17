@@ -2,6 +2,7 @@ import { Model, DataTypes, InferAttributes, InferCreationAttributes, CreationOpt
 import { sequelize } from "../config/db";
 import Address from "./Address";
 import { UUID } from "crypto";
+import Team from "./Team";
 
 class School extends Model <InferAttributes<School>, InferCreationAttributes<School>> {
   declare id: CreationOptional<UUID>;
@@ -15,6 +16,7 @@ class School extends Model <InferAttributes<School>, InferCreationAttributes<Sch
   declare createdAt: CreationOptional<Date>;
   declare updatedAt: CreationOptional<Date>;
   declare deletedAt: CreationOptional<Date | null>;
+  declare Team: NonAttribute<Team>;
 }
 
 School.init({
