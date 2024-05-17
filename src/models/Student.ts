@@ -17,12 +17,11 @@ class Student extends Model<
   InferCreationAttributes<Student>
 > {
   declare id: ForeignKey<UUID>;
-  declare school: string;
   declare fieldPosition: string;
   declare shirtNumber: number;
   declare IMSS: string;
 
-  declare teamId: ForeignKey<UUID>;
+  declare teamId: ForeignKey<UUID | null>;
 
   declare Team: NonAttribute<Team>;
 
@@ -42,9 +41,6 @@ Student.init(
         key: "id",
       },
     },
-    school: {
-      type: DataTypes.UUID,
-    },
     fieldPosition: {
       type: DataTypes.UUID,
     },
@@ -57,6 +53,7 @@ Student.init(
         model: Team,
         key: "id",
       },
+      allowNull: true,
     },
     IMSS: {
       type: DataTypes.STRING,
@@ -94,7 +91,7 @@ User.hasOne(Student, {
 Student.belongsTo(Team, {
   foreignKey: {
     name: "teamId",
-    allowNull: false,
+    allowNull: true,
   },
 });
 
