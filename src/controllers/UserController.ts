@@ -155,30 +155,34 @@ class UserController {
     res: Response,
     next: NextFunction
   ): Promise<void> {
-    let registeredParam: boolean = req.query.registered ? true : false;
-    let registered: boolean = true;
-
-    if (registeredParam && req.query.registered === "false") {
-      registered = false;
-    }
-
-    if (registered) {
-      throw new ServerError(
-        StatusCodes.INTERNAL_SERVER_ERROR,
-        "Metodo sin implementar"
-      );
-    } else {
-      const tournamentId = req.params.tournamentId;
-      const result = await StudentService.findStudentsNotOnTournament(
-        tournamentId
-      );
-      const response: JSONResponse = {
-        success: true,
-        message: `Users not registered on tournament ${tournamentId} retrieved successfully`,
-        data: result,
-      };
-      res.status(StatusCodes.OK).json(response);
-    }
+   try {
+     let registeredParam: boolean = req.query.registered ? true : false;
+     let registered: boolean = true;
+ 
+     if (registeredParam && req.query.registered === "false") {
+       registered = false;
+     }
+ 
+     if (registered) {
+       throw new ServerError(
+         StatusCodes.INTERNAL_SERVER_ERROR,
+         "Metodo sin implementar"
+       );
+     } else {
+       const tournamentId = req.params.tournamentId;
+       const result = await StudentService.findStudentsNotOnTournament(
+         tournamentId
+       );
+       const response: JSONResponse = {
+         success: true,
+         message: `Users not registered on tournament ${tournamentId} retrieved successfully`,
+         data: result,
+       };
+       res.status(StatusCodes.OK).json(response);
+     }
+   } catch (error) {
+      next(error);
+   }
   }
 }
 
