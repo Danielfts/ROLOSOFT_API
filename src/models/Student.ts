@@ -16,7 +16,8 @@ class Student extends Model<
   InferAttributes<Student>,
   InferCreationAttributes<Student>
 > {
-  declare id: ForeignKey<UUID>;
+  declare id: CreationOptional<UUID>;
+  declare userId: ForeignKey<UUID>;
   declare fieldPosition: string;
   declare shirtNumber: number;
   declare IMSS: string;
@@ -36,6 +37,10 @@ Student.init(
     id: {
       type: DataTypes.UUID,
       primaryKey: true,
+      defaultValue: DataTypes.UUIDV4,
+    },
+    userId: {
+      type: DataTypes.UUID,
       references: {
         model: User,
         key: "id",
@@ -79,12 +84,12 @@ Student.init(
 );
 
 Student.belongsTo(User, {
-  foreignKey: { name: "id", allowNull: false },
+  foreignKey: { name: "userId", allowNull: false },
   onDelete: "CASCADE",
 });
 
 User.hasOne(Student, {
-  foreignKey: { name: "id", allowNull: false },
+  foreignKey: { name: "userId", allowNull: false },
   onDelete: "CASCADE",
 });
 
