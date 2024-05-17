@@ -7,6 +7,7 @@ import {
   ForeignKey,
   NonAttribute,
   BelongsToGetAssociationMixin,
+  HasManyAddAssociationsMixin,
 } from "sequelize";
 import { sequelize } from "../config/db";
 import School from "./School";
@@ -31,6 +32,8 @@ class Team extends Model<InferAttributes<Team>, InferCreationAttributes<Team>> {
 
   declare getSchool: BelongsToGetAssociationMixin<School>;
   declare getTournament: BelongsToGetAssociationMixin<Tournament>;
+
+  declare addStudents: HasManyAddAssociationsMixin<Student, UUID>;
 }
 Team.init(
   {

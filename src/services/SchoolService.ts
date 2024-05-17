@@ -4,7 +4,7 @@ import SchoolDTO from "../dtos/schoolDTO";
 import { sequelize } from "../config/db";
 import AddressService from "./AddressService";
 import Address from "../models/Address";
-import { Op, Sequelize, where } from "sequelize";
+import { Op, Sequelize, Transaction, where } from "sequelize";
 import Team from "../models/Team";
 
 class SchoolService {
@@ -34,20 +34,29 @@ class SchoolService {
   public static async registerSchoolInTournament(
     tournamentId: UUID,
     schoolId: UUID,
-    sponsor: string
+    sponsor: string,
+    studentIds: UUID[]
   ) {
-    const team: Team = await Team.create({
-      tournamentId: tournamentId,
-      schoolId: schoolId,
-      sponsor: sponsor,
+    let dto: SchoolDTO;
+    dto = await sequelize.transaction(async (t) => {
+      const team: Team = await Team.create({
+        tournamentId: tournamentId,
+        schoolId: schoolId,
+        sponsor: sponsor,
+      }, {transaction: t});
+      const createdTeam: Team | null = await Team.findByPk(team.id, {
+        include: School,
+        transaction: t,
+      });
+      
+      createdTeam?.addStudents(studentIds, { transaction: t })
+
+      const school = createdTeam!.School;
+      school.Address = await school.getAddress();
+      const dto: SchoolDTO = this.mapSchool(school);
+      dto.sponsor = createdTeam!.sponsor;
+      return dto;
     });
-    const createdTeam: Team | null = await Team.findByPk(team.id, {
-      include: School,
-    });
-    const school = createdTeam!.School;
-    school.Address = await school.getAddress();
-    const dto: SchoolDTO = this.mapSchool(school);
-    dto.sponsor = createdTeam!.sponsor;
     return dto;
   }
 

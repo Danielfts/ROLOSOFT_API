@@ -21,7 +21,7 @@ class StudentService {
   ) {
     const createdStudent = await Student.create(
       {
-        userId: userId,
+        id: userId,
         fieldPosition: student.fieldPosition,
         shirtNumber: student.shirtNumber,
         IMSS: student.IMSS,

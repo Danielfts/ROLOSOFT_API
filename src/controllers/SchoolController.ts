@@ -36,11 +36,13 @@ class SchoolController {
       const tournamentId: any = req.params.tournamentId;
       const schoolId: UUID = req.body.school.id;
       const sponsor: string = req.body.sponsor;
+      const studentIds: UUID[] = req.body.students;
       const schoolDTO: SchoolDTO =
         await SchoolService.registerSchoolInTournament(
           tournamentId,
           schoolId,
-          sponsor
+          sponsor,
+          studentIds
         );
       const response: JSONResponse = {
         success: true,

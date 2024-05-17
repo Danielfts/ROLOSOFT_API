@@ -1,8 +1,9 @@
-import { Model, DataTypes, InferAttributes, InferCreationAttributes, CreationOptional, NonAttribute, BelongsToGetAssociationMixin } from "sequelize";
+import { Model, DataTypes, InferAttributes, InferCreationAttributes, CreationOptional, NonAttribute, BelongsToGetAssociationMixin, HasManyAddAssociationsMixin } from "sequelize";
 import { sequelize } from "../config/db";
 import Address from "./Address";
 import { UUID } from "crypto";
 import Team from "./Team";
+import Student from "./Student";
 
 class School extends Model <InferAttributes<School>, InferCreationAttributes<School>> {
   declare id: CreationOptional<UUID>;
@@ -17,6 +18,7 @@ class School extends Model <InferAttributes<School>, InferCreationAttributes<Sch
   declare updatedAt: CreationOptional<Date>;
   declare deletedAt: CreationOptional<Date | null>;
   declare Team: NonAttribute<Team>;
+
 }
 
 School.init({
