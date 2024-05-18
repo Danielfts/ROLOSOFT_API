@@ -9,6 +9,7 @@ import ClientError from "../errors/ClientError";
 import Roles from "../models/Roles";
 import StudentService from "../services/StudentService";
 import { boolean } from "joi";
+import { UUID } from "crypto";
 
 class UserController {
   static async validateToken(req: Request, res: Response, next: NextFunction) {
@@ -33,7 +34,7 @@ class UserController {
     try {
       const email: string = req.body.email;
       const password: string = req.body.password;
-      const result: { success: boolean; id: string; role: string } =
+      const result: { success: boolean, id: string, role: string, tournamentId?: UUID } =
         await UserService.logIn(email, password);
       const secret: string | undefined = process.env.JWT_SECRET;
       if (secret === undefined) {
@@ -49,7 +50,7 @@ class UserController {
         const response: JSONResponse = {
           success: true,
           message: "User logged in successfully",
-          data: { userId: result.id, token: token },
+          data: { userId: result.id, token: token, tournamentId: result.tournamentId },
         };
         res.status(StatusCodes.OK).json(response);
       }

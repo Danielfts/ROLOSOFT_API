@@ -211,7 +211,7 @@ class UserService {
   public static async logIn(
     email: string,
     password: string
-  ): Promise<{ success: boolean; id: string; role: string }> {
+  ): Promise<{ success: boolean; id: string; role: string ; tournamentId?: UUID}> {
     const user: User | null = await User.findOne({ where: { email: email } });
     if (!user) {
       throw new ClientError(StatusCodes.NOT_FOUND, "User not found");
@@ -224,7 +224,21 @@ class UserService {
     if (!isPasswordValid) {
       throw new ClientError(StatusCodes.UNAUTHORIZED, "Invalid password");
     }
-    return { success: true, id: user.id.toString(), role: user.role };
+    
+    let result : any = { success: true, id: user.id.toString(), role: user.role};
+    if (user.role === Roles.student){
+      
+      const student = await Student.findOne({include: Team,where:{
+        id: result.id
+      }})
+      if (student?.Team){
+        result.tournamentId = student.Team.tournamentId;
+      } else {
+        throw new ClientError(StatusCodes.FORBIDDEN,"The user does not belong to any tournament, so it is forbidden from using the app.")
+      }
+    }
+
+    return result;
   }
 
   public static async validateUser(id: string | UUID, role?: Role) {

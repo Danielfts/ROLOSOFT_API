@@ -26,6 +26,7 @@ class Student extends Model<
   declare Team: NonAttribute<Team>;
   declare User: NonAttribute<User>;
 
+
   //Timestamps
   declare createdAt: CreationOptional<Date>;
   declare updatedAt: CreationOptional<Date>;
