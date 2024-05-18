@@ -68,6 +68,13 @@ tournamentRouter.get(
 )
 
 //PHASES
+// AVAILABLE PHASES
+tournamentRouter.get(
+  "/phases",
+  validateClient,
+  PhaseController.getPossiblePhases
+)
+
 tournamentRouter.post(
   "/:tournamentId/phases",
   validateClient,
