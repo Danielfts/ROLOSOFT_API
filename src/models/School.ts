@@ -18,7 +18,6 @@ class School extends Model <InferAttributes<School>, InferCreationAttributes<Sch
   declare updatedAt: CreationOptional<Date>;
   declare deletedAt: CreationOptional<Date | null>;
   declare Team: NonAttribute<Team>;
-
 }
 
 School.init({

@@ -34,8 +34,12 @@ class UserController {
     try {
       const email: string = req.body.email;
       const password: string = req.body.password;
-      const result: { success: boolean, id: string, role: string, tournamentId?: UUID } =
-        await UserService.logIn(email, password);
+      const result: {
+        success: boolean;
+        id: string;
+        role: string;
+        tournamentId?: UUID;
+      } = await UserService.logIn(email, password);
       const secret: string | undefined = process.env.JWT_SECRET;
       if (secret === undefined) {
         throw new ServerError(
@@ -50,7 +54,11 @@ class UserController {
         const response: JSONResponse = {
           success: true,
           message: "User logged in successfully",
-          data: { userId: result.id, token: token, tournamentId: result.tournamentId },
+          data: {
+            userId: result.id,
+            token: token,
+            tournamentId: result.tournamentId,
+          },
         };
         res.status(StatusCodes.OK).json(response);
       }
@@ -156,34 +164,33 @@ class UserController {
     res: Response,
     next: NextFunction
   ): Promise<void> {
-   try {
-     let registeredParam: boolean = req.query.registered ? true : false;
-     let registered: boolean = true;
- 
-     if (registeredParam && req.query.registered === "false") {
-       registered = false;
-     }
- 
-     if (registered) {
-       throw new ServerError(
-         StatusCodes.INTERNAL_SERVER_ERROR,
-         "Metodo sin implementar"
-       );
-     } else {
-       const tournamentId = req.params.tournamentId;
-       const result = await StudentService.findStudentsNotOnTournament(
-         tournamentId
-       );
-       const response: JSONResponse = {
-         success: true,
-         message: `Users not registered on tournament ${tournamentId} retrieved successfully`,
-         data: result,
-       };
-       res.status(StatusCodes.OK).json(response);
-     }
-   } catch (error) {
+    try {
+      let registeredParam: boolean = req.query.registered ? true : false;
+      let registered: boolean = true;
+
+      if (registeredParam && req.query.registered === "false") {
+        registered = false;
+      }
+
+      const tournamentId = req.params.tournamentId;
+      let result: any[];
+      let msg: string;
+      if (registered) {
+        result = await StudentService.findStudentsByTournament(tournamentId);
+        msg = `Users registered on tournament ${tournamentId} retrieved successfully`;
+      } else {
+        result = await StudentService.findStudentsNotOnTournament(tournamentId);
+        msg = `Users not registered on tournament ${tournamentId} retrieved successfully`;
+      }
+      const response: JSONResponse = {
+        success: true,
+        message: msg,
+        data: result,
+      };
+      res.status(StatusCodes.OK).json(response);
+    } catch (error) {
       next(error);
-   }
+    }
   }
 }
 
