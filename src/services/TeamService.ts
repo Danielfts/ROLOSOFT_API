@@ -6,6 +6,7 @@ import Team from "../models/Team";
 import Tournament from "../models/Tournament";
 import { UUID } from "crypto";
 import ClientError from "../errors/ClientError";
+import { TimeoutError } from "sequelize";
 
 class TeamService {
   public static mapTeam(team: Team): teamDTO {
@@ -22,6 +23,14 @@ class TeamService {
       },
     };
     return dto;
+  }
+
+  public static async getTeamByTournamentAndSchool(tournamentId: UUID, schoolId: UUID): Promise<Team>{
+    const team : Team | null = await Team.findOne({where:{tournamentId : tournamentId, schoolId: schoolId}, include: School});
+    if (team === null){
+      throw new ClientError(StatusCodes.NOT_FOUND, `Couldn't find a school with id ${schoolId} registered on tournament with id ${tournamentId}`)
+    }
+    return team;
   }
 
   public static async getOneTeam(id: UUID): Promise<teamDTO> {
