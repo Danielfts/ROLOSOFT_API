@@ -8,6 +8,7 @@ import Student from "./Student";
 class School extends Model <InferAttributes<School>, InferCreationAttributes<School>> {
   declare id: CreationOptional<UUID>;
   declare name: string;
+  declare number: number;
   declare addressId: UUID;
   declare Address : NonAttribute<Address>;
 
@@ -25,6 +26,11 @@ School.init({
     type: DataTypes.UUID,
     primaryKey: true,
     defaultValue: DataTypes.UUIDV4
+  },
+  number: {
+    type: DataTypes.INTEGER,
+    allowNull: false,
+    unique: true
   },
   name: {
     type: DataTypes.STRING,

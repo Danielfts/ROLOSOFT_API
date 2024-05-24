@@ -12,7 +12,7 @@ class SchoolService {
     return await sequelize.transaction<SchoolDTO>(async (t) => {
       const address = await AddressService.createAddress(school.address, t);
       const newSchool = await School.create(
-        { name: school.name, addressId: address.id },
+        { name: school.name, addressId: address.id , number: school.number},
         { transaction: t }
       );
       const newSchoolAddress: Address = await newSchool.getAddress({
@@ -25,6 +25,7 @@ class SchoolService {
         id: newSchool.id,
         name: newSchool.name,
         address: newSchoolAddress,
+        number: newSchool.number
       };
 
       return newSchoolDTO;
@@ -142,6 +143,7 @@ class SchoolService {
     const dto = {
       id: school.id,
       name: school.name,
+      number: school.number,
       address: school.Address && {
         id: school.Address.id,
         address1: school.Address.address1,
