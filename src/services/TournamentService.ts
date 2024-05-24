@@ -5,6 +5,8 @@ import ClientError from "../errors/ClientError";
 import Address from "../models/Address";
 import Tournament from "../models/Tournament";
 import AddressService from "./AddressService";
+import SoccerStages from "../models/SoccerStages";
+import PhaseService from "./PhaseService";
 
 class TournamentService {
   public static validateTournament(
@@ -57,6 +59,27 @@ class TournamentService {
           },
           { transaction: t }
         );
+        const phaseNames: string[] = [
+          "CUARTOS_DE_FINAL",
+          "FASE_INICIAL",
+          "FINAL",
+          "SEMIFINAL",
+        ]
+
+        for (const p of phaseNames) {
+          const phaseDto = {
+            name: p,
+            tournament: {
+              id: createdTournament.id,
+            },
+            startDate: new Date(),
+            endDate: new Date(),
+          };
+          await PhaseService.createPhase(
+            phaseDto,
+            t
+          );
+        }
 
         const result = await Tournament.findByPk(createdTournament.id, {
           include: [Address],

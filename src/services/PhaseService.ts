@@ -5,6 +5,7 @@ import phaseDTO from "../dtos/phaseDTO";
 import Tournament from "../models/Tournament";
 import ClientError from "../errors/ClientError";
 import { StatusCodes } from "http-status-codes";
+import { Sequelize, Transaction } from "sequelize";
 
 class PhaseService {
   static async getTournamentPhases(tournamentId: string): Promise<phaseDTO[]> {
@@ -32,7 +33,8 @@ class PhaseService {
     return dtos;
   }
 
-  public static async createPhase(phase: phaseDTO) : Promise<phaseDTO>{
+  public static async createPhase(phase: phaseDTO, t?: Transaction) : Promise<phaseDTO>{
+    
     if (!(phase.name in SoccerStages)){
       throw new ClientError(StatusCodes.BAD_REQUEST, "Invalid phase name", {})
     }
@@ -42,7 +44,7 @@ class PhaseService {
       name: phase.name,
       startDate: phase.startDate, 
       endDate: phase.endDate,
-    })
+    }, {transaction: t})
     const tournament = await result.getTournament({attributes: {
       exclude: ["createdAt", "updatedAt", "deletedAt"]
     }});
