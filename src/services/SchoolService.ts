@@ -6,6 +6,11 @@ import AddressService from "./AddressService";
 import Address from "../models/Address";
 import { Op, Sequelize, Transaction, where } from "sequelize";
 import Team from "../models/Team";
+import Tournament from "../models/Tournament";
+import TournamentService from "./TournamentService";
+import tournamentDTO from "../dtos/tournamentDTO";
+import ClientError from "../errors/ClientError";
+import { StatusCodes } from "http-status-codes";
 
 class SchoolService {
   public static async createSchool(school: SchoolDTO): Promise<SchoolDTO> {
@@ -64,6 +69,10 @@ class SchoolService {
   public static async getSchoolsNotInTournament(
     tournamentId: string
   ): Promise<SchoolDTO[]> {
+    const tournament: tournamentDTO | null = await TournamentService.getTournamentById(tournamentId);
+    if (tournament === null){
+      throw new ClientError(StatusCodes.NOT_FOUND, `Couldn't find tournament with id ${tournamentId}`)
+    }
     const teams: Team[] = await Team.findAll({
       include: School,
       where: { tournamentId: tournamentId },
@@ -82,6 +91,10 @@ class SchoolService {
   public static async getSchoolsByTournament(
     tournamentId: string
   ): Promise<SchoolDTO[]> {
+    const tournament: tournamentDTO | null = await TournamentService.getTournamentById(tournamentId);
+    if (tournament === null){
+      throw new ClientError(StatusCodes.NOT_FOUND, `Couldn't find tournament with id ${tournamentId}`)
+    }
     const schools: School[] = await School.findAll({
       where: {
         "$Team.tournamentId$": tournamentId,
