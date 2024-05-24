@@ -68,7 +68,7 @@ tournamentRouter.get(
 //MATCHES
 // CREATE
 tournamentRouter.post(
-  "/:tournamentId/phases/:phaseId/matches",
+  "/:tournamentId/phases/:phaseName/matches",
   validateClient,
   MatchController.createMatch
 );

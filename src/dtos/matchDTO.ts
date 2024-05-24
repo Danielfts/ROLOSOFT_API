@@ -4,10 +4,10 @@ import teamDTO from "./teamDTO";
 
 interface matchDTO {
   id?: UUID;
-  startDate: Date;
-  endDate: Date;
-  teamA: {id: UUID;} | teamDTO; 
-  teamB: {id: UUID;} | teamDTO; 
+  startDateTime: Date;
+  endDateTime: Date;
+  schoolA : any 
+  schoolB: any
   phase: {id: UUID;} | phaseDTO; 
 }
 

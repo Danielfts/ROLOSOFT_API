@@ -1,62 +1,123 @@
+import { UUID } from "crypto";
 import matchDTO from "../dtos/matchDTO";
 import Match from "../models/Match";
 import PhaseService from "./PhaseService";
 import TeamService from "./TeamService";
+import Phase from "../models/Phase";
+import Tournament from "../models/Tournament";
+import TournamentService from "./TournamentService";
+import ClientError from "../errors/ClientError";
+import { StatusCodes } from "http-status-codes";
 
 class MatchService {
-  private static async validateMatch(matchDTO : matchDTO): Promise<boolean>{
-    const teamA = await TeamService.getOneTeam(matchDTO.teamA.id!);
-    const teamB = await TeamService.getOneTeam(matchDTO.teamB.id!);
-    const startDate = new Date(matchDTO.startDate);
-    const endDate = new Date(matchDTO.endDate);
+  private static async validateMatch(matchDTO: matchDTO): Promise<boolean> {
+    const schoolA = await TeamService.getOneTeam(matchDTO.schoolA.id!);
+    const schoolB = await TeamService.getOneTeam(matchDTO.schoolB.id!);
+    const startDate = new Date(matchDTO.startDateTime);
+    const endDate = new Date(matchDTO.endDateTime);
     if (!startDate) {
       throw new Error("Start date is required");
     }
     if (!endDate) {
       throw new Error("End date is required");
     }
-    if (teamA.id === teamB.id){
-      throw new Error("Team A and Team B must be different teams");
+    if (schoolA.id === schoolB.id) {
+      throw new Error("School A and School B must be different teams");
     }
-    if (teamA.tournament.id !== teamB.tournament.id){
+    if (schoolA.tournament.id !== schoolB.tournament.id) {
       throw new Error("Teams must belong to the same tournament");
     }
-    if (matchDTO.startDate >= matchDTO.endDate){
+    if (matchDTO.startDateTime >= matchDTO.endDateTime) {
       throw new Error("Start date must be before end date");
     }
-    if (teamA.school.id === teamB.school.id){
+    if (schoolA.school.id === schoolB.school.id) {
       throw new Error("Teams must belong to different schools");
     }
 
     return true;
-
   }
 
-  public static async createMatch(match : matchDTO) : Promise<matchDTO> {
-    await MatchService.validateMatch(match);
-    const startDate = new Date(match.startDate);
-    const endDate = new Date(match.endDate);
-    const newMatch : Match = await Match.create({
-      teamAId: match.teamA.id!,
-      teamBId: match.teamB.id!,
-      startDate: startDate,
-      endDate: endDate,
-      phaseId: match.phase.id!,
+  public static async createMatch(
+    match: matchDTO,
+    tournamentId: UUID,
+    phaseName: string
+  ): Promise<matchDTO> {
+    // await MatchService.validateMatch(match);
+    const tournament = await TournamentService.getTournamentById(tournamentId);
+    if (tournament === null) {
+      throw new ClientError(
+        StatusCodes.NOT_FOUND,
+        `Couldn't find tournament with id ${tournamentId}`
+      );
+    }
+    const phase = await Phase.findOne({
+      where: { tournamentId: tournamentId, name: phaseName },
+      include: Tournament,
     });
 
-    const teamA = await TeamService.getOneTeam(newMatch.teamAId);
-    const teamB = await TeamService.getOneTeam(newMatch.teamBId);
-    const phase = await PhaseService.getOnePhase(newMatch.phaseId);
-
-    const newDTO : matchDTO = {
-      id: newMatch.id!,
-      teamA: teamA,
-      teamB: teamB,
-      startDate: newMatch.startDate!,
-      endDate: newMatch.endDate!,
-      phase: phase,
+    if (phase === null) {
+      throw new ClientError(
+        StatusCodes.NOT_FOUND,
+        `Couldn't find phase ${phaseName} registered on tournament with id ${tournamentId}`
+      );
     }
+
+    const startDateTime = new Date(match.startDateTime);
+    const endDateTime = new Date(match.endDateTime);
+
+    const teamA = await TeamService.getTeamByTournamentAndSchool(
+      phase.Tournament.id!,
+      match.schoolA.id
+    );
+    const teamB = await TeamService.getTeamByTournamentAndSchool(
+      phase.Tournament.id!,
+      match.schoolB.id
+    );
+
+    const newMatch: Match = await Match.create({
+      teamAId: teamA.id!,
+      teamBId: teamB.id!,
+      startDate: startDateTime,
+      endDate: endDateTime,
+      phaseId: phase.id,
+    });
+
+    const newDTO: matchDTO = {
+      id: newMatch.id!,
+      schoolA: teamA,
+      schoolB: teamB,
+      startDateTime: newMatch.startDate!,
+      endDateTime: newMatch.endDate!,
+      phase: phase,
+    };
     return newDTO;
+  }
+
+  public static async getAllMatchesByTournament(
+    tournamentId: UUID
+  ): Promise<any[]> {
+    let data = await Match.findAll({
+      where: {
+        "$Phase.Tournament.id$": tournamentId,
+      },
+      include: [{ model: Phase, include: [Tournament] }, ""],
+    });
+
+    //TODO FIX DUMMY
+    let dataDto = data.map((m) => {
+      const dto = {
+        id: m.id,
+        startDate: m.startDate,
+        endDate: m.endDate,
+        teamA: {
+          id: "",
+        },
+        teamB: {
+          id: "",
+        },
+      };
+    });
+    return data;
   }
 }
 

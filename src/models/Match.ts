@@ -17,9 +17,6 @@ class Match extends Model<InferAttributes<Match>, InferCreationAttributes<Match>
   declare TeamA: NonAttribute<Team>;
   declare TeamB: NonAttribute<Team>;
 
-  declare getTeamA: BelongsToGetAssociationMixin<Team>;
-  declare getTeamB: BelongsToGetAssociationMixin<Team>;
-
   declare Phase : NonAttribute<Phase>;
 }
 Match.init({
@@ -84,14 +81,16 @@ Match.belongsTo(Team, {
   foreignKey: {
     name: "teamAId",
     allowNull: false
-  }
+  },
+  as: "TeamA"
 })
 
 Match.belongsTo(Team, {
   foreignKey: {
     name: "teamBId",
     allowNull: false
-  }
+  },
+  as: "TeamB"
 })
 
 Team.hasMany(Match, {
