@@ -35,7 +35,7 @@ tournamentRouter.post(
   SchoolController.registerSchoolInTournament
 );
 
-// Get all schools in a tournament
+// GET ALL SCHOOLS IN A TOURNAMENT
 tournamentRouter.get(
   "/:tournamentId/schools",
   validateClient,
@@ -48,6 +48,13 @@ tournamentRouter.get(
   "/:tournamentId/players",
   validateClient,
   UserController.getStudentsByTournament
+);
+
+//  Add student to school in tournament
+tournamentRouter.post(
+  "/:tournamentId/schools/:schoolId/students/:studentId",
+  validateClient,
+  UserController.addStudentToTeam
 );
 
 //PHASES
@@ -83,12 +90,14 @@ tournamentRouter.get(
           shieldImg: "null",
           goals: [
             {
+              id: "metenmeasdfñlj",
               name: "pepito",
               lastName: "gomelin",
               minute: 90,
               player_number: 10,
             },
             {
+              id: "metenmeasdfñlj",
               name: "juanito",
               lastName: "ñero",
               minute: 80,
@@ -103,12 +112,14 @@ tournamentRouter.get(
           shieldImg: "null",
           goals: [
             {
+              id: "metenmeasdfñlj",
               name: "pepito",
               lastName: "caremonda",
               minute: 90,
               player_number: 10,
             },
             {
+              id: "metenmeasdfñlj",
               name: "juanito",
               lastName: "caremonda",
               minute: 80,
@@ -128,12 +139,14 @@ tournamentRouter.get(
           shieldImg: "null",
           goals: [
             {
+              id: "metenmeasdfñlj",
               name: "pepito",
               lastName: "gomelin",
               minute: 90,
               player_number: 10,
             },
             {
+              id: "metenmeasdfñlj",
               name: "juanito",
               lastName: "ñero",
               minute: 80,
@@ -148,12 +161,14 @@ tournamentRouter.get(
           shieldImg: "null",
           goals: [
             {
+              id: "metenmeasdfñlj",
               name: "pepito",
               lastName: "caremonda",
               minute: 90,
               player_number: 10,
             },
             {
+              id: "metenmeasdfñlj",
               name: "juanito",
               lastName: "caremonda",
               minute: 80,
