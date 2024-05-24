@@ -12,6 +12,30 @@ import { boolean } from "joi";
 import { UUID } from "crypto";
 
 class UserController {
+  public static async addStudentToTeam(
+    req: Request,
+    res: Response,
+    next: NextFunction
+  ) {
+    try {
+      const studentId: any = req.params.studentId;
+      const tournamentId: any = req.params.tournamentId;
+      const schoolId: any = req.params.schoolId;
+
+      await StudentService.registerStudentOnTeam(
+        studentId,
+        tournamentId,
+        schoolId
+      );
+      const response: JSONResponse = {
+        success: true,
+        message: `Student with id ${studentId} registered successfully with school ${schoolId} on tournament ${tournamentId}`,
+      };
+      res.status(StatusCodes.CREATED).json(response);
+    } catch (error) {
+      next(error);
+    }
+  }
   static async validateToken(req: Request, res: Response, next: NextFunction) {
     try {
       await UserService.validateUser(req.body.me.userId);

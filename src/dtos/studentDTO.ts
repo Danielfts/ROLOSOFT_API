@@ -6,6 +6,7 @@ interface StudentDTO {
     fieldPosition: string;
     shirtNumber: number;
     IMSS: string;
+    team?: any
 }
 
 export default StudentDTO;
