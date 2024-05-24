@@ -77,7 +77,8 @@ class TournamentService {
           };
           await PhaseService.createPhase(
             phaseDto,
-            t
+            createdTournament.id,
+            t,
           );
         }
 

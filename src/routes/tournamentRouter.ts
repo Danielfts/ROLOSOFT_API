@@ -6,6 +6,7 @@ import PhaseController from "../controllers/PhaseController";
 import MatchController from "../controllers/MatchController";
 import SchoolController from "../controllers/SchoolController";
 import UserController from "../controllers/UserController";
+import Match from "../models/Match";
 
 const tournamentRouter = Router();
 
@@ -21,27 +22,6 @@ tournamentRouter.post(
   validateClient,
   TournamentController.createTournament
 );
-
-//TEAMS
-//REFACTOR TEAMS ENDPOINTS
-// tournamentRouter.post(
-//   "/teams/",
-//   validateClient,
-//   TeamController.createTeam
-// )
-
-// tournamentRouter.get(
-//   "/teams/",
-//   validateClient,
-//   TeamController.getAllTeams
-// )
-
-
-// tournamentRouter.get(
-//   "/teams/:id",
-//   validateClient,
-//   TeamController.getOneTeam,
-// )
 
 // TOURNAMENT SCHOOLS
 // Register a school in a tournament
@@ -68,30 +48,27 @@ tournamentRouter.get(
 )
 
 //PHASES
-// AVAILABLE PHASES
-tournamentRouter.get(
-  "/phases",
-  validateClient,
-  PhaseController.getPossiblePhases
-)
-
-tournamentRouter.post(
-  "/:tournamentId/phases",
-  validateClient,
-  PhaseController.createPhase
-)
-
+// GET AVAILABLE PHASES
 tournamentRouter.get(
   "/:tournamentId/phases",
   validateClient,
-  PhaseController.getAllPhases
+  PhaseController.getAllPhasesByTournament
 )
 
 //MATCHES
+// CREATE
 tournamentRouter.post(
   "/:tournamentId/phases/:phaseId/matches",
   validateClient,
   MatchController.createMatch
 )
+
+// GET ALL
+tournamentRouter.get(
+  "/:tournamentId",
+  validateClient,
+  MatchController.getAllMatches
+)
+
 
 export default tournamentRouter;

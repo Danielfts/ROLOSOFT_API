@@ -17,15 +17,11 @@ class PhaseService {
     const dtos: phaseDTO[] =  [];
 
     for (const phase of result){
-      const tournament = await phase.getTournament({attributes: {
-        exclude: ["createdAt", "updatedAt", "deletedAt"]
-      }});
       const dto: phaseDTO = {
         id: phase.id,
         name: phase.name,
         startDate: phase.startDate,
         endDate: phase.endDate,
-        tournament: tournament
       }
       dtos.push(dto);
     }
@@ -33,14 +29,14 @@ class PhaseService {
     return dtos;
   }
 
-  public static async createPhase(phase: phaseDTO, t?: Transaction) : Promise<phaseDTO>{
+  public static async createPhase(phase: phaseDTO,tournamentId: UUID, t?: Transaction) : Promise<phaseDTO>{
     
     if (!(phase.name in SoccerStages)){
       throw new ClientError(StatusCodes.BAD_REQUEST, "Invalid phase name", {})
     }
 
     const result: Phase | null = await Phase.create({
-      tournamentId : phase.tournament.id!,
+      tournamentId : tournamentId,
       name: phase.name,
       startDate: phase.startDate, 
       endDate: phase.endDate,

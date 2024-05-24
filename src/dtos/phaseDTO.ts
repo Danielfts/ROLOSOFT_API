@@ -3,7 +3,7 @@ import tournamentDTO from "./tournamentDTO";
 
 export default interface phaseDTO {
   id?: UUID,
-  tournament: tournamentDTO | {
+  tournament?: tournamentDTO | {
     id: UUID
   },
   name: string,
