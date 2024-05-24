@@ -30,7 +30,6 @@ School.init({
   number: {
     type: DataTypes.INTEGER,
     allowNull: false,
-    unique: true
   },
   name: {
     type: DataTypes.STRING,
