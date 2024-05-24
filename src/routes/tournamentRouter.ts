@@ -10,6 +10,7 @@ import Match from "../models/Match";
 import { UUIDV4 } from "sequelize";
 import { StatusCodes } from "http-status-codes";
 import JSONResponse from "../dtos/JSONResponse";
+import { v4 as uuidv4 } from 'uuid';
 
 const tournamentRouter = Router();
 
@@ -84,20 +85,20 @@ tournamentRouter.get(
         dateEnd: new Date(),
         isPlaying: true,
         teamA: {
-          id: 1,
+          id: uuidv4(),
           name: "santa fe",
           points: 20,
           shieldImg: "null",
           goals: [
             {
-              id: "metenmeasdfñlj",
+              id: uuidv4(),
               name: "pepito",
               lastName: "gomelin",
               minute: 90,
               player_number: 10,
             },
             {
-              id: "metenmeasdfñlj",
+              id: uuidv4(),
               name: "juanito",
               lastName: "ñero",
               minute: 80,
@@ -106,20 +107,20 @@ tournamentRouter.get(
           ],
         },
         teamB: {
-          id: 2,
+          id: uuidv4(),
           points: 18,
           name: "junior",
           shieldImg: "null",
           goals: [
             {
-              id: "metenmeasdfñlj",
+              id: uuidv4(),
               name: "pepito",
               lastName: "caremonda",
               minute: 90,
               player_number: 10,
             },
             {
-              id: "metenmeasdfñlj",
+              id: uuidv4(),
               name: "juanito",
               lastName: "caremonda",
               minute: 80,
@@ -133,20 +134,20 @@ tournamentRouter.get(
         dateEnd: new Date(),
         isPlaying: true,
         teamA: {
-          id: 3,
+          id: uuidv4(),
           name: "santa fe",
           points: 20,
           shieldImg: "null",
           goals: [
             {
-              id: "metenmeasdfñlj",
+              id: uuidv4(),
               name: "pepito",
               lastName: "gomelin",
               minute: 90,
               player_number: 10,
             },
             {
-              id: "metenmeasdfñlj",
+              id: uuidv4(),
               name: "juanito",
               lastName: "ñero",
               minute: 80,
@@ -155,20 +156,20 @@ tournamentRouter.get(
           ],
         },
         teamB: {
-          id: 4,
+          id: uuidv4(),
           points: 18,
           name: "junior",
           shieldImg: "null",
           goals: [
             {
-              id: "metenmeasdfñlj",
+              id: uuidv4(),
               name: "pepito",
               lastName: "caremonda",
               minute: 90,
               player_number: 10,
             },
             {
-              id: "metenmeasdfñlj",
+              id: uuidv4(),
               name: "juanito",
               lastName: "caremonda",
               minute: 80,
