@@ -131,6 +131,7 @@ tournamentRouter.get(
         },
       },
       {
+        id: uuidv4(),
         dateStart: new Date(),
         dateEnd: new Date(),
         isPlaying: true,
