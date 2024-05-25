@@ -1,13 +1,10 @@
 import { Router } from "express";
 import TournamentController from "../controllers/TournamentController";
 import { validateClient } from "../middlewares/clientValidation";
-import TeamController from "../controllers/TeamController";
 import PhaseController from "../controllers/PhaseController";
 import MatchController from "../controllers/MatchController";
 import SchoolController from "../controllers/SchoolController";
 import UserController from "../controllers/UserController";
-import Match from "../models/Match";
-import { UUIDV4 } from "sequelize";
 import { StatusCodes } from "http-status-codes";
 import JSONResponse from "../dtos/JSONResponse";
 import { v4 as uuidv4 } from 'uuid';
@@ -189,5 +186,13 @@ tournamentRouter.get(
     res.status(StatusCodes.OK).json(response);
   }
 );
+
+//ADD GOAL
+tournamentRouter.post(
+  "/:tournamentId/matches/:matchId",
+  validateClient,
+  MatchController.addGoal
+
+)
 
 export default tournamentRouter;

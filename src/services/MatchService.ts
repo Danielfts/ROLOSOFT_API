@@ -8,8 +8,38 @@ import Tournament from "../models/Tournament";
 import TournamentService from "./TournamentService";
 import ClientError from "../errors/ClientError";
 import { StatusCodes } from "http-status-codes";
+import { NextFunction } from "express";
+import GoalDTO from "../dtos/goalDTO";
+import Goal from "../models/Goal";
+import { UUIDV4 } from "sequelize";
+import Team from "../models/Team";
 
 class MatchService {
+  public static async addGoal(
+    goalDTO: GoalDTO,
+    tournamentId: UUID,
+    matchId: UUID
+  ): Promise<any> {
+    const schoolId = goalDTO.school.id;
+    const team: Team | null = await Team.findOne({
+      where: { schoolId: schoolId },
+    });
+    if (team === null) {
+      throw new ClientError(
+        StatusCodes.NOT_FOUND,
+        `Couldn't find a school with id ${schoolId} registered on tournament with id ${tournamentId}`
+      );
+    }
+    const createdGoal: Goal = await Goal.create({
+      matchId: matchId,
+      studentId: goalDTO.student.id,
+      teamId: team.id,
+      minute: goalDTO.minute,
+    });
+
+    return createdGoal;
+  }
+
   private static async validateMatch(matchDTO: matchDTO): Promise<boolean> {
     const schoolA = await TeamService.getOneTeam(matchDTO.schoolA.id!);
     const schoolB = await TeamService.getOneTeam(matchDTO.schoolB.id!);
