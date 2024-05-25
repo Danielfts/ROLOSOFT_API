@@ -8,7 +8,7 @@ interface matchDTO {
   endDateTime: Date;
   schoolA: any;
   schoolB: any;
-  phase: { id: UUID } | phaseDTO;
+  phase?: { id: UUID } | phaseDTO;
 }
 
 export default matchDTO;
