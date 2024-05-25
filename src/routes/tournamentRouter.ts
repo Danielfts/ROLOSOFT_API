@@ -7,7 +7,7 @@ import SchoolController from "../controllers/SchoolController";
 import UserController from "../controllers/UserController";
 import { StatusCodes } from "http-status-codes";
 import JSONResponse from "../dtos/JSONResponse";
-import { v4 as uuidv4 } from 'uuid';
+
 
 const tournamentRouter = Router();
 
@@ -82,116 +82,7 @@ tournamentRouter.post(
 tournamentRouter.get(
   "/:tournamentId/matches",
   validateClient,
-  (req, res, next) => {
-    const dummy = [
-      {
-        id: uuidv4(),
-        dateStart: new Date(),
-        dateEnd: new Date(),
-        isPlaying: true,
-        teamA: {
-          id: uuidv4(),
-          name: "santa fe",
-          points: 20,
-          shieldImg: "null",
-          goals: [
-            {
-              id: uuidv4(),
-              name: "pepito",
-              lastName: "gomelin",
-              minute: 90,
-              player_number: 10,
-            },
-            {
-              id: uuidv4(),
-              name: "juanito",
-              lastName: "ñero",
-              minute: 80,
-              player_number: 11,
-            },
-          ],
-        },
-        teamB: {
-          id: uuidv4(),
-          points: 18,
-          name: "junior",
-          shieldImg: "null",
-          goals: [
-            {
-              id: uuidv4(),
-              name: "pepito",
-              lastName: "caremonda",
-              minute: 90,
-              player_number: 10,
-            },
-            {
-              id: uuidv4(),
-              name: "juanito",
-              lastName: "caremonda",
-              minute: 80,
-              player_number: 11,
-            },
-          ],
-        },
-      },
-      {
-        id: uuidv4(),
-        dateStart: new Date(),
-        dateEnd: new Date(),
-        isPlaying: true,
-        teamA: {
-          id: uuidv4(),
-          name: "santa fe",
-          points: 20,
-          shieldImg: "null",
-          goals: [
-            {
-              id: uuidv4(),
-              name: "pepito",
-              lastName: "gomelin",
-              minute: 90,
-              player_number: 10,
-            },
-            {
-              id: uuidv4(),
-              name: "juanito",
-              lastName: "ñero",
-              minute: 80,
-              player_number: 11,
-            },
-          ],
-        },
-        teamB: {
-          id: uuidv4(),
-          points: 18,
-          name: "junior",
-          shieldImg: "null",
-          goals: [
-            {
-              id: uuidv4(),
-              name: "pepito",
-              lastName: "caremonda",
-              minute: 90,
-              player_number: 10,
-            },
-            {
-              id: uuidv4(),
-              name: "juanito",
-              lastName: "caremonda",
-              minute: 80,
-              player_number: 11,
-            },
-          ],
-        },
-      },
-    ];
-    const response: JSONResponse = {
-      success: true,
-      message: "Matches retrieved successfully",
-      data: dummy,
-    };
-    res.status(StatusCodes.OK).json(response);
-  }
+  MatchController.getAllMatchesByTournament
 );
 
 //ADD GOAL
