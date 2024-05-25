@@ -86,6 +86,19 @@ class TeamService {
 
     return teamDTOs;
   }
+
+  public static async setTeamPoints(tournamentId: UUID, schoolId: UUID, points: number ): Promise<number>{
+    const result  = await Team.update({
+      points: points
+    },{where: {
+      tournamentId: tournamentId,
+      schoolId: schoolId,
+    }})
+    if (result[0] === 0) {
+      throw new ClientError(StatusCodes.NOT_FOUND, `Couldn't find a team for school with id ${schoolId} on tournament with id ${tournamentId}`)
+    }
+    return result[0];
+  }
 }
 
 export default TeamService;

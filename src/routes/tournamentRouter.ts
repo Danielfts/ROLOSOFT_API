@@ -40,6 +40,13 @@ tournamentRouter.get(
   SchoolController.getSchoolsByTournament
 );
 
+//SET TEAM POINTS
+tournamentRouter.post(
+  "/:tournamentId/schools/:schoolId/points",
+  validateClient,
+  SchoolController.setTeamPoints
+)
+
 //TOURNAMENT STUDENTS
 
 tournamentRouter.get(

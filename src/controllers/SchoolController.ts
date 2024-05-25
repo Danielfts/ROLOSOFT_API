@@ -6,8 +6,37 @@ import { StatusCodes } from "http-status-codes";
 import UserService from "../services/UserService";
 import Roles from "../models/Roles";
 import { UUID } from "crypto";
+import TeamService from "../services/TeamService";
 
 class SchoolController {
+  public static async setTeamPoints(
+    req: Request,
+    res: Response,
+    next: NextFunction
+  ) {
+    try {
+      await UserService.validateUser(req.body.me.userId, Roles.admin);
+      const points: number = req.body.points;
+      const tournamentId: any = req.params.tournamentId;
+      const schoolId: any = req.params.schoolId;
+      const result: number = await TeamService.setTeamPoints(tournamentId, schoolId, points);
+      if (result === 1){
+        const response: JSONResponse = {
+          success: true,
+          message: `The points for the team of school with id ${schoolId} on tournament with id ${tournamentId} have been set to ${points}`,
+        };
+        res.status(StatusCodes.OK).json(response);
+      } else {
+        const response: JSONResponse = {
+          success: false,
+          message: `There was an error setting the points for the team of school with id ${schoolId} on tournament with id ${tournamentId}.`,
+        };
+        res.status(StatusCodes.INTERNAL_SERVER_ERROR).json(response);
+      }
+    } catch (error) {
+      next(error);
+    }
+  }
   public static async createSchool(
     req: Request,
     res: Response,
@@ -82,9 +111,12 @@ class SchoolController {
     try {
       await UserService.validateUser(req.body.me.userId);
       let registered: boolean = true;
-      if (req.query.registered === "true" || req.query.registered === undefined) {
+      if (
+        req.query.registered === "true" ||
+        req.query.registered === undefined
+      ) {
         registered = true;
-      } else if (req.query.registered === "false" ) {
+      } else if (req.query.registered === "false") {
         registered = false;
       }
 
