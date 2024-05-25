@@ -200,6 +200,7 @@ class SchoolService {
         includeStudents &&
         school.Team.Students.map((i): UserDTO => {
           const userDto: UserDTO = {
+            id: i.id,
             CURP: i.User.CURP,
             firstName: i.User.CURP,
             lastName: i.User.lastName,
