@@ -29,6 +29,7 @@ class Team extends Model<InferAttributes<Team>, InferCreationAttributes<Team>> {
   declare Phase: NonAttribute<Phase>;
   declare School: NonAttribute<School>;
   declare Tournament: NonAttribute<Tournament>;
+  declare Students: NonAttribute<Student[]>;
 
   declare getSchool: BelongsToGetAssociationMixin<School>;
   declare getTournament: BelongsToGetAssociationMixin<Tournament>;

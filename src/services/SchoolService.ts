@@ -11,13 +11,17 @@ import TournamentService from "./TournamentService";
 import tournamentDTO from "../dtos/tournamentDTO";
 import ClientError from "../errors/ClientError";
 import { StatusCodes } from "http-status-codes";
+import User from "../models/User";
+import Student from "../models/Student";
+import UserDTO from "../dtos/userDTO";
+import Gender from "../models/Gender";
 
 class SchoolService {
   public static async createSchool(school: SchoolDTO): Promise<SchoolDTO> {
     return await sequelize.transaction<SchoolDTO>(async (t) => {
       const address = await AddressService.createAddress(school.address, t);
       const newSchool = await School.create(
-        { name: school.name, addressId: address.id , number: school.number},
+        { name: school.name, addressId: address.id, number: school.number },
         { transaction: t }
       );
       const newSchoolAddress: Address = await newSchool.getAddress({
@@ -30,7 +34,7 @@ class SchoolService {
         id: newSchool.id,
         name: newSchool.name,
         address: newSchoolAddress,
-        number: newSchool.number
+        number: newSchool.number,
       };
 
       return newSchoolDTO;
@@ -45,17 +49,20 @@ class SchoolService {
   ) {
     let dto: SchoolDTO;
     dto = await sequelize.transaction(async (t) => {
-      const team: Team = await Team.create({
-        tournamentId: tournamentId,
-        schoolId: schoolId,
-        sponsor: sponsor,
-      }, {transaction: t});
+      const team: Team = await Team.create(
+        {
+          tournamentId: tournamentId,
+          schoolId: schoolId,
+          sponsor: sponsor,
+        },
+        { transaction: t }
+      );
       const createdTeam: Team | null = await Team.findByPk(team.id, {
         include: School,
         transaction: t,
       });
-      
-      createdTeam?.addStudents(studentIds, { transaction: t })
+
+      createdTeam?.addStudents(studentIds, { transaction: t });
 
       const school = createdTeam!.School;
       school.Address = await school.getAddress();
@@ -69,9 +76,13 @@ class SchoolService {
   public static async getSchoolsNotInTournament(
     tournamentId: string
   ): Promise<SchoolDTO[]> {
-    const tournament: tournamentDTO | null = await TournamentService.getTournamentById(tournamentId);
-    if (tournament === null){
-      throw new ClientError(StatusCodes.NOT_FOUND, `Couldn't find tournament with id ${tournamentId}`)
+    const tournament: tournamentDTO | null =
+      await TournamentService.getTournamentById(tournamentId);
+    if (tournament === null) {
+      throw new ClientError(
+        StatusCodes.NOT_FOUND,
+        `Couldn't find tournament with id ${tournamentId}`
+      );
     }
     const teams: Team[] = await Team.findAll({
       include: School,
@@ -91,21 +102,40 @@ class SchoolService {
   public static async getSchoolsByTournament(
     tournamentId: string
   ): Promise<SchoolDTO[]> {
-    const tournament: tournamentDTO | null = await TournamentService.getTournamentById(tournamentId);
-    if (tournament === null){
-      throw new ClientError(StatusCodes.NOT_FOUND, `Couldn't find tournament with id ${tournamentId}`)
+    const tournament: tournamentDTO | null =
+      await TournamentService.getTournamentById(tournamentId);
+    if (tournament === null) {
+      throw new ClientError(
+        StatusCodes.NOT_FOUND,
+        `Couldn't find tournament with id ${tournamentId}`
+      );
     }
     const schools: School[] = await School.findAll({
       where: {
         "$Team.tournamentId$": tournamentId,
       },
-      include: [{ model: Team, as: "Team" }, { model: Address }],
+      include: [
+        {
+          model: Team,
+          as: "Team",
+          include: [
+            {
+              model: Student,
+              as: "Students",
+              include: [{ model: User, include: [Gender, Address] }],
+            },
+          ],
+        },
+        { model: Address },
+      ],
     });
+
     const schoolsDTO: SchoolDTO[] = schools.map((school) => {
-      const dto = this.mapSchool(school);
+      const dto: SchoolDTO = this.mapSchool(school, true);
       dto.sponsor = school.Team!.sponsor;
       return dto;
     });
+
     return schoolsDTO;
   }
 
@@ -152,8 +182,8 @@ class SchoolService {
       throw error;
     }
   }
-  private static mapSchool(school: School): SchoolDTO {
-    const dto = {
+  private static mapSchool(school: School, includeStudents?:boolean): SchoolDTO {
+    const dto: SchoolDTO = {
       id: school.id,
       name: school.name,
       number: school.number,
@@ -166,6 +196,27 @@ class SchoolService {
         country: school.Address.country,
         postalCode: school.Address.postalCode,
       },
+      students:
+        includeStudents &&
+        school.Team.Students.map((i): UserDTO => {
+          const userDto: UserDTO = {
+            CURP: i.User.CURP,
+            firstName: i.User.CURP,
+            lastName: i.User.lastName,
+            email: i.User.email,
+            birthDate: i.User.birthDate,
+            gender: i.User.Gender.name,
+            role: i.User.role,
+            phone: i.User.phone,
+            address: i.User.Address,
+            student: {
+              fieldPosition: i.fieldPosition,
+              shirtNumber: i.shirtNumber,
+              IMSS: i.IMSS,
+            },
+          };
+          return userDto;
+        }),
     };
     return dto;
   }

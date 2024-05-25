@@ -7,5 +7,6 @@ interface SchoolDTO {
   name: string;
   address: addressDTO;
   sponsor?: string;
+  students?: any
 }
 export default SchoolDTO;
