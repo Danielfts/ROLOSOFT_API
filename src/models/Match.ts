@@ -3,6 +3,7 @@ import { sequelize } from "../config/db";
 import Team from "./Team";
 import Phase from "./Phase";
 import { UUID } from "crypto";
+import Goal from "./Goal";
 
 
 class Match extends Model<InferAttributes<Match>, InferCreationAttributes<Match>> {
@@ -18,6 +19,7 @@ class Match extends Model<InferAttributes<Match>, InferCreationAttributes<Match>
   declare TeamB: NonAttribute<Team>;
 
   declare Phase : NonAttribute<Phase>;
+  declare Goals: NonAttribute<Goal[]>;
 }
 Match.init({
   id: {

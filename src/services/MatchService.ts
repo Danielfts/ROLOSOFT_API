@@ -13,6 +13,11 @@ import GoalDTO from "../dtos/goalDTO";
 import Goal from "../models/Goal";
 import { UUIDV4 } from "sequelize";
 import Team from "../models/Team";
+import MatchDetailDTO from "../dtos/matchDetailDTO";
+import School from "../models/School";
+import Student from "../models/Student";
+import User from "../models/User";
+import {goal} from "../dtos/matchDetailDTO"
 
 class MatchService {
   public static async addGoal(
@@ -125,29 +130,86 @@ class MatchService {
 
   public static async getAllMatchesByTournament(
     tournamentId: UUID
-  ): Promise<any[]> {
+  ): Promise<MatchDetailDTO[]> {
     let data = await Match.findAll({
-      where: {
-        "$Phase.Tournament.id$": tournamentId,
-      },
-      include: [{ model: Phase, include: [Tournament] }, ""],
+      where: {},
+      include: [
+        {
+          right: true,
+          model: Phase,
+          where: {
+            "tournamentId" : tournamentId
+          }
+        },
+        {
+          model: Team,
+          as: "TeamA",
+          include: [School]
+        },
+        {
+          model: Team,
+          as: "TeamB",
+          include: [School]
+        },
+        {
+          model: Goal,
+          as: "Goals",
+          include: [
+            {
+              model: Student,
+              include: [User]
+            },
+            {
+              model: Team,
+              as: "ForTeam"
+            }
+          ]
+        }
+      ]
     });
 
     //TODO FIX DUMMY
     let dataDto = data.map((m) => {
-      const dto = {
+      let goalsInFavorOfA: goal[] = [];
+      let goalsInFavorOfB: goal[] = [];
+      m.Goals.forEach((g) => {
+        const goalDTO: goal = {
+          id: g.Student.id,
+          name: g.Student.User.firstName,
+          lastName: g.Student.User.lastName,
+          minute: g.minute,
+          playerNumber: g.Student.shirtNumber
+        }
+        if (g.ForTeam.id === m.TeamA.id){
+          goalsInFavorOfA.push(goalDTO)
+        } else {
+          goalsInFavorOfB.push(goalDTO)
+        }
+      })
+      const dto: MatchDetailDTO = {
         id: m.id,
-        startDate: m.startDate,
-        endDate: m.endDate,
+        dateTimeStart: m.startDate,
+        dateTimeEnd: m.endDate,
         teamA: {
-          id: "",
+          id: m.TeamA.schoolId,
+          name: m.TeamA.School.name,
+          points: m.TeamA.points,
+          shieldImg: undefined,
+          goals: goalsInFavorOfA
         },
         teamB: {
-          id: "",
+          id: m.TeamB.schoolId,
+          name: m.TeamB.School.name,
+          points: 0,
+          shieldImg: undefined,
+          goals: goalsInFavorOfB
         },
+        isPlaying: true
       };
+      return dto;
     });
-    return data;
+
+    return dataDto;
   }
 }
 

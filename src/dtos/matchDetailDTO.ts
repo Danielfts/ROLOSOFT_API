@@ -1,6 +1,6 @@
 import { UUID } from "crypto";
 
-interface goal {
+export interface goal {
   id: UUID | string,
   name: string,
   lastName: string,
@@ -8,7 +8,7 @@ interface goal {
   playerNumber: number
 }
 
-interface team {
+export interface team {
   id: UUID | string,
   name: string,
   points: number,

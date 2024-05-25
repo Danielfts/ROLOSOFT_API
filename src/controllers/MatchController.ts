@@ -7,6 +7,7 @@ import { StatusCodes } from "http-status-codes";
 import GoalDTO from "../dtos/goalDTO";
 import { v4 as uuidv4 } from 'uuid';
 import MatchDetailDTO from "../dtos/matchDetailDTO";
+import matchDTO from "../dtos/matchDTO";
 
 class MatchController {
   public static async addGoal(req: Request, res: Response, next: NextFunction) {
@@ -39,7 +40,7 @@ class MatchController {
       const userId = req.body.me.userId;
       await UserService.validateUser(userId);
       const tournamentId: any = req.params.tournamentId;
-      const data: any[] = await MatchService.getAllMatchesByTournament(
+      const data: MatchDetailDTO[] = await MatchService.getAllMatchesByTournament(
         tournamentId
       );
 
