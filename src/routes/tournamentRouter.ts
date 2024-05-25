@@ -81,6 +81,7 @@ tournamentRouter.get(
   (req, res, next) => {
     const dummy = [
       {
+        id: uuidv4(),
         dateStart: new Date(),
         dateEnd: new Date(),
         isPlaying: true,
