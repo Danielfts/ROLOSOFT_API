@@ -202,7 +202,7 @@ class SchoolService {
           const userDto: UserDTO = {
             id: i.id,
             CURP: i.User.CURP,
-            firstName: i.User.CURP,
+            firstName: i.User.firstName,
             lastName: i.User.lastName,
             email: i.User.email,
             birthDate: i.User.birthDate,
