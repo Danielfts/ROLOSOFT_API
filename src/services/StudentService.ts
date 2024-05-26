@@ -94,7 +94,7 @@ class StudentService {
         birthDate: i.User.birthDate,
         gender: i.User.Gender.name,
         role: i.User.role,
-        phone: i.User.role,
+        phone: i.User.phone,
         address: i.User.Address,
         student: this.mapStudent(i),
       };
