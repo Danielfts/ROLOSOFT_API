@@ -47,6 +47,7 @@ class StudentService {
       fieldPosition: student.fieldPosition,
       shirtNumber: student.shirtNumber,
       IMSS: student.IMSS,
+      team : student.Team,
     };
     return dto;
   }

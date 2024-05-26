@@ -54,7 +54,14 @@ class UserService {
     switch (user.role) {
       case Roles.student:
         const student = await user.getStudent({
-          include: [Team],
+          include: [
+            {
+              model: Team,
+              attributes: {
+                exclude: ["createdAt", "updatedAt", "deletedAt", "id"],
+              },
+            },
+          ],
           attributes: {
             exclude: ["id", "createdAt", "updatedAt", "deletedAt"],
           },
@@ -211,7 +218,12 @@ class UserService {
   public static async logIn(
     email: string,
     password: string
-  ): Promise<{ success: boolean; id: string; role: string ; tournamentId?: UUID}> {
+  ): Promise<{
+    success: boolean;
+    id: string;
+    role: string;
+    tournamentId?: UUID;
+  }> {
     const user: User | null = await User.findOne({ where: { email: email } });
     if (!user) {
       throw new ClientError(StatusCodes.NOT_FOUND, "User not found");
@@ -224,17 +236,26 @@ class UserService {
     if (!isPasswordValid) {
       throw new ClientError(StatusCodes.UNAUTHORIZED, "Invalid password");
     }
-    
-    let result : any = { success: true, id: user.id.toString(), role: user.role};
-    if (user.role === Roles.student){
-      
-      const student = await Student.findOne({include: Team,where:{
-        id: result.id
-      }})
-      if (student?.Team){
+
+    let result: any = {
+      success: true,
+      id: user.id.toString(),
+      role: user.role,
+    };
+    if (user.role === Roles.student) {
+      const student = await Student.findOne({
+        include: Team,
+        where: {
+          id: result.id,
+        },
+      });
+      if (student?.Team) {
         result.tournamentId = student.Team.tournamentId;
       } else {
-        throw new ClientError(StatusCodes.FORBIDDEN,"The user does not belong to any tournament, so it is forbidden from using the app.")
+        throw new ClientError(
+          StatusCodes.FORBIDDEN,
+          "The user does not belong to any tournament, so it is forbidden from using the app."
+        );
       }
     }
 
