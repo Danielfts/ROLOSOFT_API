@@ -23,6 +23,8 @@ class User extends Model < InferAttributes<User, {}>, InferCreationAttributes<Us
   declare addressId: ForeignKey<UUID> | null;
   declare role: string;
 
+  declare Student: NonAttribute<Student>;
+
   //MIXINS
   declare getGender: HasOneGetAssociationMixin<Gender>;
   declare getStudent: HasOneGetAssociationMixin<Student>;

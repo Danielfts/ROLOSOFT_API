@@ -93,4 +93,11 @@ tournamentRouter.post(
 
 )
 
+//SEARCH
+tournamentRouter.get(
+  "/:tournamentId/search",
+  validateClient,
+  TournamentController.searchStudentsAndSchools
+)
+
 export default tournamentRouter;

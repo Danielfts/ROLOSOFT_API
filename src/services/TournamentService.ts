@@ -7,8 +7,109 @@ import Tournament from "../models/Tournament";
 import AddressService from "./AddressService";
 import SoccerStages from "../models/SoccerStages";
 import PhaseService from "./PhaseService";
+import Student from "../models/Student";
+import { Op } from "sequelize";
+import User from "../models/User";
+import School from "../models/School";
+import Team from "../models/Team";
+import { UUID } from "crypto";
 
 class TournamentService {
+  public static async searchStudentsAndSchools(
+    searchTerm: string,
+    tournamentId: UUID
+  ): Promise<object> {
+    const tournament = await Tournament.findByPk(tournamentId);
+    if (tournament === null) {
+      throw new ClientError(StatusCodes.NOT_FOUND, `Couln't find a tournament with id ${tournamentId}`)
+    }
+
+    let userCondition: any | null = {
+      [Op.or]: [
+        {
+          firstName: {
+            [Op.like]: `%${searchTerm}%`,
+          },
+        },
+        {
+          lastName: {
+            [Op.like]: `%${searchTerm}%`,
+          },
+        },
+      ],
+    };
+
+    const userStudents = await User.findAll({
+      where: searchTerm === "" || searchTerm === undefined ? undefined : userCondition,
+      include: [
+        {
+          model: Student,
+          right: true,
+          include: [
+            {
+              model: Team,
+              where: {
+                tournamentId: tournamentId,
+              },
+            },
+          ],
+        },
+      ],
+    });
+
+    const schools = await School.findAll({
+      where:
+        searchTerm === "" || searchTerm === undefined
+          ? undefined
+          : {
+              [Op.or]: [
+                {
+                  name: {
+                    [Op.like]: `%${searchTerm}%`,
+                  },
+                },
+              ],
+            },
+      include: [
+        {
+          model: Team,
+          right: true,
+          where: {
+            tournamentId: tournamentId,
+          },
+        },
+      ],
+    });
+
+    const dto = {
+      schools: schools.map((s) => {
+        const dto = {
+          id: s.id,
+          name: s.name,
+          number: s.number,
+          points: s.Team.points,
+          logoUrl: "",
+        };
+        return dto;
+      }),
+      students: userStudents.map((s) => {
+        const dto = {
+          id: s.id,
+          firstName: s.firstName,
+          lastName: s.lastName,
+          teamId: s.Student.teamId,
+          teamLogoUrl: "",
+          studentPhotoUrl: "",
+          goals: 0,
+          greenCards: 0,
+        };
+        return dto;
+      }),
+    };
+
+    return dto;
+  }
+
   public static validateTournament(
     tournament: tournamentDTO
   ): [boolean, object] {
@@ -64,7 +165,7 @@ class TournamentService {
           "FASE_INICIAL",
           "FINAL",
           "SEMIFINAL",
-        ]
+        ];
 
         for (const p of phaseNames) {
           const phaseDto = {
@@ -75,11 +176,7 @@ class TournamentService {
             startDate: new Date(),
             endDate: new Date(),
           };
-          await PhaseService.createPhase(
-            phaseDto,
-            createdTournament.id,
-            t,
-          );
+          await PhaseService.createPhase(phaseDto, createdTournament.id, t);
         }
 
         const result = await Tournament.findByPk(createdTournament.id, {
