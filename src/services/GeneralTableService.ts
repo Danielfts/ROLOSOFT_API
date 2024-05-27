@@ -56,6 +56,11 @@ class GeneralTableService {
           victories: 0,
           teamId: s.Team.id,
           position: i + 1,
+          points: 0,
+          goalsFor: 0,
+          goalsAgainst: 0,
+          goalDifference: 0,
+          gamesPlayed: 0,
         },
       });
 
@@ -101,6 +106,8 @@ class GeneralTableService {
     });
 
     for (let m of tournamentMatches) {
+      processingMap.get(m.TeamA.id)!.generalTableInstance.gamesPlayed++;
+      processingMap.get(m.TeamB.id)!.generalTableInstance.gamesPlayed++;
       if (m.endDate > new Date()) {
         continue;
       }
@@ -117,16 +124,34 @@ class GeneralTableService {
         }
       }
 
+      processingMap.get(m.TeamA.id)!.generalTableInstance.goalsFor += marker.teamA;
+      processingMap.get(m.TeamA.id)!.generalTableInstance.goalsAgainst += marker.teamB;
+
+      processingMap.get(m.TeamB.id)!.generalTableInstance.goalsFor += marker.teamB;
+      processingMap.get(m.TeamB.id)!.generalTableInstance.goalsAgainst += marker.teamA;
+
       if (marker.teamA > marker.teamB) {
         processingMap.get(m.TeamA.id)!.generalTableInstance.victories++;
         processingMap.get(m.TeamB.id)!.generalTableInstance.defeats++;
+
+        processingMap.get(m.TeamA.id)!.generalTableInstance.points += 3;
       } else if (marker.teamA < marker.teamB) {
         processingMap.get(m.TeamB.id)!.generalTableInstance.victories++;
         processingMap.get(m.TeamA.id)!.generalTableInstance.defeats++;
+
+        processingMap.get(m.TeamB.id)!.generalTableInstance.points += 3;
       } else {
         processingMap.get(m.TeamA.id)!.generalTableInstance.draws++;
         processingMap.get(m.TeamB.id)!.generalTableInstance.draws++;
+
+        processingMap.get(m.TeamA.id)!.generalTableInstance.points++;
+        processingMap.get(m.TeamB.id)!.generalTableInstance.points++;
       }
+
+      processingMap.get(m.TeamA.id)!.generalTableInstance.goalDifference +=
+        marker.teamA - marker.teamB;
+      processingMap.get(m.TeamB.id)!.generalTableInstance.goalDifference +=
+        marker.teamB - marker.teamA;
     }
 
     let generalTableArray: GeneralTable[] = [];
@@ -177,6 +202,12 @@ class GeneralTableService {
         draws: gt.draws,
         defeats: gt.defeats,
         position: gt.position,
+        points: gt.points,
+        goalsFor: gt.goalsFor,
+        goalsAgainst: gt.goalsAgainst,
+        goalDifference: gt.goalDifference,
+        gamesPlayed: gt.gamesPlayed,
+
         //TODO REMOVE DUMMY DATA
         photoUrl:
           "https://upload.wikimedia.org/wikipedia/commons/thumb/5/58/Escudo_de_Independiente_Santa_Fe.png/150px-Escudo_de_Independiente_Santa_Fe.png",
