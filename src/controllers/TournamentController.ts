@@ -5,6 +5,7 @@ import UserService from "../services/UserService";
 import { StatusCodes } from "http-status-codes";
 import tournamentDTO from "../dtos/tournamentDTO";
 import Roles from "../models/Roles";
+import GeneralTableService from "../services/GeneralTableService";
 
 class TournamentController {
   static async searchStudentsAndSchools(
@@ -66,6 +67,27 @@ class TournamentController {
         data: tournament,
       };
       res.status(StatusCodes.CREATED).json(response);
+    } catch (error) {
+      next(error);
+    }
+  }
+
+  public static async getGeneralTable(
+    req: Request,
+    res: Response,
+    next: NextFunction
+  ){
+
+    try {
+      await UserService.validateUser(req.body.me.userId);
+      const tournamentId: any = req.params.tournamentId;
+      const generalTable = await GeneralTableService.getGeneralTable(tournamentId);
+      const response: JSONResponse = {
+        success: true,
+        message: `General table for tournament with id ${tournamentId} retrieved successfully`,
+        data: generalTable,
+      };
+      res.status(StatusCodes.OK).json(response);
     } catch (error) {
       next(error);
     }

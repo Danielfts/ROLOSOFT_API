@@ -100,4 +100,12 @@ tournamentRouter.get(
   TournamentController.searchStudentsAndSchools
 )
 
+//STATISTICS
+
+tournamentRouter.get(
+  "/:tournamentId/general-table",
+  validateClient,
+  TournamentController.getGeneralTable
+)
+
 export default tournamentRouter;

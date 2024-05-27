@@ -126,7 +126,7 @@ export async function setupDatabase(): Promise<void> {
         country: "País",
       },
     };
-    const escuelaCreadaB = await SchoolService.createSchool(escuelaA);
+    const escuelaCreadaB = await SchoolService.createSchool(escuelaB);
   
     await SchoolService.registerSchoolInTournament(torneoCreado.id!, escuelaCreadaA.id!, "CERVEZA AGUILA", [estudianteCreadoA.id]);
     
