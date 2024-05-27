@@ -31,7 +31,8 @@ GeneralTable.init({
     references: {
       model: Team,
       key: "id",
-    }
+    },
+    unique: true,
   },
   defeats: {
     type: DataTypes.INTEGER,

@@ -7,9 +7,18 @@ import Tournament from "../models/Tournament";
 import ServerError from "../errors/ServerError";
 import { StatusCodes } from "http-status-codes";
 import GeneralTable from "../models/GeneralTable";
+import Goal from "../models/Goal";
 
 class GeneralTableService {
   public static async updateGeneralTable(tournamentId: UUID): Promise<void> {
+    let processingMap: Map<
+      UUID,
+      {
+        generalTableInstance: GeneralTable;
+        school: School;
+      }
+    > = new Map<UUID, any>();
+
     const tournament: Tournament | null = await Tournament.findOne({
       where: {
         id: tournamentId,
@@ -34,9 +43,10 @@ class GeneralTableService {
         },
       ],
     });
+
     let i = 0;
     for (let s of tournamentSchools) {
-      await GeneralTable.findOrCreate({
+      const [instance, created] = await GeneralTable.findOrCreate({
         where: {
           teamId: s.Team.id,
         },
@@ -48,11 +58,28 @@ class GeneralTableService {
           position: i + 1,
         },
       });
+
+      processingMap.set(s.Team.id, {
+        generalTableInstance: instance,
+        school: s,
+      });
       i++;
     }
 
+    // const table : GeneralTable[] = await this.getTableByTournament(tournamentId);
+
     const tournamentMatches: Match[] = await Match.findAll({
       include: [
+        {
+          model: Goal,
+          as: "Goals",
+          include: [
+            {
+              model: Team,
+              as: "ForTeam",
+            },
+          ],
+        },
         {
           model: Phase,
           right: true,
@@ -73,24 +100,75 @@ class GeneralTableService {
       ],
     });
 
+    for (let m of tournamentMatches) {
+      if (m.endDate > new Date()) {
+        continue;
+      }
+      let marker = {
+        teamA: 0,
+        teamB: 0,
+      };
+
+      for (let g of m.Goals) {
+        if (g.ForTeam.id === m.TeamA.id) {
+          marker.teamA++;
+        } else {
+          marker.teamB++;
+        }
+      }
+
+      if (marker.teamA > marker.teamB) {
+        processingMap.get(m.TeamA.id)!.generalTableInstance.victories++;
+        processingMap.get(m.TeamB.id)!.generalTableInstance.defeats++;
+      } else if (marker.teamA < marker.teamB) {
+        processingMap.get(m.TeamB.id)!.generalTableInstance.victories++;
+        processingMap.get(m.TeamA.id)!.generalTableInstance.defeats++;
+      } else {
+        processingMap.get(m.TeamA.id)!.generalTableInstance.draws++;
+        processingMap.get(m.TeamB.id)!.generalTableInstance.draws++;
+      }
+    }
+
+    let generalTableArray: GeneralTable[] = [];
+    for (let [_, value] of processingMap) {
+      generalTableArray.push(value.generalTableInstance);
+    }
+    generalTableArray.sort((a, b) => {
+      if (a.victories > b.victories) {
+        return -1;
+      } else if (a.victories < b.victories) {
+        return 1;
+      } else {
+        if (a.draws > b.draws) {
+          return -1;
+        } else if (a.draws < b.draws) {
+          return 1;
+        } else {
+          if (a.defeats < b.defeats) {
+            return -1;
+          } else if (a.defeats > b.defeats) {
+            return 1;
+          } else {
+            return 0;
+          }
+        }
+      }
+    });
+
+    let position = 1;
+    for (let gt of generalTableArray) {
+      gt.position = position;
+      await gt.save();
+      position++;
+    }
     return;
   }
 
   public static async getGeneralTable(tournamentId: UUID): Promise<object[]> {
     await this.updateGeneralTable(tournamentId);
 
-    const generalTable: GeneralTable[] = await GeneralTable.findAll({
-      include: [
-        {
-          model: Team,
-          include: [School],
-          right: true,
-          where: {
-            tournamentId: tournamentId,
-          },
-        },
-      ],
-    });
+    const generalTable: GeneralTable[] =
+      await GeneralTableService.getTableByTournament(tournamentId);
 
     const generalTableObject: object[] = generalTable.map((gt) => {
       return {
@@ -106,6 +184,24 @@ class GeneralTableService {
     });
 
     return generalTableObject;
+  }
+
+  private static async getTableByTournament(
+    tournamentId: string
+  ): Promise<GeneralTable[]> {
+    return await GeneralTable.findAll({
+      order: [["position", "ASC"]],
+      include: [
+        {
+          model: Team,
+          include: [School],
+          right: true,
+          where: {
+            tournamentId: tournamentId,
+          },
+        },
+      ],
+    });
   }
 }
 
