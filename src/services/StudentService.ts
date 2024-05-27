@@ -91,7 +91,7 @@ class StudentService {
         CURP: i.User.CURP,
         firstName: i.User.firstName,
         lastName: i.User.lastName,
-        email: i.User.lastName,
+        email: i.User.email,
         birthDate: i.User.birthDate,
         gender: i.User.Gender.name,
         role: i.User.role,
