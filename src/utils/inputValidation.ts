@@ -8,7 +8,11 @@ export async function isValidEmail(email: string): Promise<boolean> {
   try {
     const mxRecords = await dns.resolveMx(domain);
     return mxRecords && mxRecords.length > 0;
-  } catch (error) {
+  } catch (error: any) {
+    if (error.code === 'ECONNREFUSED'){
+      console.error("Whoops, you aren't conected to the internet! No worries, this is a toy application, so I dont care!")
+      return true;
+    }
     console.error(`Error resolving MX records for domain ${domain}:`, error);
     return false;
   }
