@@ -55,6 +55,13 @@ tournamentRouter.get(
   UserController.getStudentsByTournament
 );
 
+// TEAM STUDENTS
+tournamentRouter.get(
+  "/:tournamentId/schools/:schoolId/players",
+  validateClient,
+  UserController.getStudentsByTournamentAndSchool
+)
+
 //  Add student to school in tournament
 tournamentRouter.post(
   "/:tournamentId/schools/:schoolId/students/:studentId",
@@ -113,5 +120,7 @@ tournamentRouter.get(
   validateClient,
   TournamentController.getGoalTable
 )
+
+
 
 export default tournamentRouter;
