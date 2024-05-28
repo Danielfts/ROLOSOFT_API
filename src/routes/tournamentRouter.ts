@@ -108,4 +108,10 @@ tournamentRouter.get(
   TournamentController.getGeneralTable
 )
 
+tournamentRouter.get(
+  "/:tournamentId/scoring-table",
+  validateClient,
+  TournamentController.getGoalTable
+)
+
 export default tournamentRouter;

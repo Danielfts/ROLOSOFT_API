@@ -6,6 +6,8 @@ import { StatusCodes } from "http-status-codes";
 import tournamentDTO from "../dtos/tournamentDTO";
 import Roles from "../models/Roles";
 import GeneralTableService from "../services/GeneralTableService";
+import GoalTableService from "../services/GoalTableService";
+import GoalTableRowDTO from "../dtos/goalTableRowDTO";
 
 class TournamentController {
   static async searchStudentsAndSchools(
@@ -86,6 +88,27 @@ class TournamentController {
         success: true,
         message: `General table for tournament with id ${tournamentId} retrieved successfully`,
         data: generalTable,
+      };
+      res.status(StatusCodes.OK).json(response);
+    } catch (error) {
+      next(error);
+    }
+  }
+
+  public static async getGoalTable(
+    req: Request,
+    res: Response,
+    next: NextFunction
+  ){
+
+    try {
+      await UserService.validateUser(req.body.me.userId);
+      const tournamentId: any = req.params.tournamentId;
+      const goalTable: GoalTableRowDTO[] = await GoalTableService.getGoalTable(tournamentId);
+      const response: JSONResponse = {
+        success: true,
+        message: `Goal table for tournament with id ${tournamentId} retrieved successfully`,
+        data: goalTable,
       };
       res.status(StatusCodes.OK).json(response);
     } catch (error) {
