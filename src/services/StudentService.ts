@@ -49,6 +49,7 @@ class StudentService {
     });
     const dtos: UserDTO[] = studentUsers.map((i): UserDTO => {
       const dto: UserDTO = {
+        id: i.id,
         CURP: i.CURP,
         firstName: i.firstName,
         lastName: i.lastName,
