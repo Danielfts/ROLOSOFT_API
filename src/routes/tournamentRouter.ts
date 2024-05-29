@@ -92,6 +92,13 @@ tournamentRouter.get(
   MatchController.getAllMatchesByTournament
 );
 
+// GET BY TEAM
+tournamentRouter.get(
+  "/:tournamentId/schools/:schoolId/matches",
+  validateClient,
+  MatchController.getAllMatchesByTournamentAndSchool
+)
+
 //ADD GOAL
 tournamentRouter.post(
   "/:tournamentId/matches/:matchId",
