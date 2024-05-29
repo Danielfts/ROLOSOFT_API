@@ -12,6 +12,7 @@ import User from "./User";
 import { UUID } from "crypto";
 import Team from "./Team";
 import Goal from "./Goal";
+import GreenCard from "./GreenCard";
 
 class Student extends Model<
   InferAttributes<Student>,
@@ -21,7 +22,6 @@ class Student extends Model<
   declare fieldPosition: string;
   declare shirtNumber: number;
   declare IMSS: string;
-  declare greenCards: CreationOptional<number>;
   declare photoUrl: CreationOptional<string>;
 
   declare teamId: ForeignKey<UUID | null>;
@@ -29,6 +29,7 @@ class Student extends Model<
   declare Team: NonAttribute<Team>;
   declare User: NonAttribute<User>;
   declare Goals: NonAttribute<Goal[]>;
+  declare GreenCards: NonAttribute<GreenCard[]>
 
 
   //Timestamps
@@ -48,7 +49,7 @@ Student.init(
       },
     },
     fieldPosition: {
-      type: DataTypes.UUID,
+      type: DataTypes.STRING,
     },
     shirtNumber: {
       type: DataTypes.INTEGER,
@@ -73,10 +74,6 @@ Student.init(
     deletedAt: {
       type: DataTypes.DATE,
       allowNull: true,
-    },
-    greenCards: {
-      type: DataTypes.INTEGER,
-      defaultValue: 0,
     },
     photoUrl: {
       type: DataTypes.STRING,

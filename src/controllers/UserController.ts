@@ -238,6 +238,28 @@ class UserController {
       next(error);
     }
   }
+
+  public static async addGreenCardToStudent(
+    req: Request,
+    res: Response,
+    next: NextFunction
+  ) {
+    try {
+      const userId = req.body.me.userId;
+      const reason: string = req.body.reason;
+      const studentId: any = req.params.studentId;
+      await UserService.validateUser(userId, Roles.admin);
+      const result = await StudentService.addGreenCardToStudent(studentId, reason);
+      const response : JSONResponse  = {
+        success: true,
+        message: `Success adding green card to student with id ${studentId}`,
+        data: result,
+      }
+      res.status(StatusCodes.CREATED).json(response);
+    } catch (error) {
+      next(error)
+    }
+  }
 }
 
 export default UserController;

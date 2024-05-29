@@ -12,6 +12,8 @@ import { StatusCodes } from "http-status-codes";
 import TournamentService from "./TournamentService";
 import School from "../models/School";
 import Address from "../models/Address";
+import GreenCard from "../models/GreenCard";
+import { string } from "joi";
 
 class StudentService {
   public static async findStudentsByTournamentAndSchool(
@@ -35,8 +37,8 @@ class StudentService {
               right: true,
               include: [
                 {
-                  model: School
-                }
+                  model: School,
+                },
               ],
               where: {
                 tournamentId: tournamentId,
@@ -59,7 +61,7 @@ class StudentService {
         role: i.role,
         phone: i.phone,
         address: i.Address,
-        student: this.mapStudent(i.Student)
+        student: this.mapStudent(i.Student),
       };
       dto.student!.team = {
         school: {
@@ -153,6 +155,7 @@ class StudentService {
     });
     const users: UserDTO[] = result.map((i) => {
       const dto: UserDTO = {
+        id: i.id,
         CURP: i.User.CURP,
         firstName: i.User.firstName,
         lastName: i.User.lastName,
@@ -199,6 +202,26 @@ class StudentService {
       };
     });
     return data;
+  }
+
+  public static async addGreenCardToStudent(
+    studentId: UUID,
+    reason: string
+  ): Promise<any> {
+    const student: Student | null = await Student.findOne({
+      where: { id: studentId },
+    });
+    if (student === null) {
+      throw new ClientError(
+        StatusCodes.NOT_FOUND,
+        `Student with id ${studentId} not found`
+      );
+    }
+    const created = await GreenCard.create({
+      studentId: studentId,
+      reason: reason,
+    });
+    return created;
   }
 }
 

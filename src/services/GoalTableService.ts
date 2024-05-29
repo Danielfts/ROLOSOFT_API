@@ -64,7 +64,8 @@ class GoalTableService {
         teamName: team.School?.name || "No school",
         goals: goals.length,
         position: position,
-        points: student.Student?.greenCards || 0,
+        // TODO FIX
+        points:  0,
         schoolId: team.School?.id || "",
         playerPhotoUrl: student.Student.photoUrl,
         teamPhotoUrl: student.Student.Team.photoUrl,

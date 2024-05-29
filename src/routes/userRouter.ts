@@ -16,4 +16,6 @@ userRouter.get("/validate-token", validateClient, UserController.validateToken);
 
 userRouter.get("/myself", validateClient, UserController.getMyself);
 
+userRouter.post("/:studentId/green-cards", validateClient, UserController.addGreenCardToStudent)
+
 export default userRouter;
