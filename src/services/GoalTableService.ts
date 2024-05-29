@@ -8,6 +8,7 @@ import School from "../models/School";
 import Tournament from "../models/Tournament";
 import ClientError from "../errors/ClientError";
 import { StatusCodes } from "http-status-codes";
+import GreenCard from "../models/GreenCard";
 
 class GoalTableService {
   public static async getGoalTable(
@@ -31,6 +32,10 @@ class GoalTableService {
           model: Student,
           right: true,
           include: [
+            {
+              model: GreenCard,
+              as: "GreenCards"
+            },
             {
               model: Goal,
               as: "Goals",
@@ -64,8 +69,7 @@ class GoalTableService {
         teamName: team.School?.name || "No school",
         goals: goals.length,
         position: position,
-        // TODO FIX
-        points:  0,
+        points:  student.Student.GreenCards.length,
         schoolId: team.School?.id || "",
         playerPhotoUrl: student.Student.photoUrl,
         teamPhotoUrl: student.Student.Team.photoUrl,
