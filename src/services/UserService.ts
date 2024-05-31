@@ -223,6 +223,7 @@ class UserService {
     id: string;
     role: string;
     tournamentId?: UUID;
+    schoolId?: UUID;
   }> {
     const user: User | null = await User.findOne({ where: { email: email } });
     if (!user) {
@@ -251,6 +252,7 @@ class UserService {
       });
       if (student?.Team) {
         result.tournamentId = student.Team.tournamentId;
+        result.schoolId = student.Team.schoolId;
       } else {
         throw new ClientError(
           StatusCodes.FORBIDDEN,

@@ -63,6 +63,7 @@ class UserController {
         id: string;
         role: string;
         tournamentId?: UUID;
+        schoolId?: UUID;
       } = await UserService.logIn(email, password);
       const secret: string | undefined = process.env.JWT_SECRET;
       if (secret === undefined) {
@@ -82,6 +83,7 @@ class UserController {
             userId: result.id,
             token: token,
             tournamentId: result.tournamentId,
+            schoolId: result.schoolId,
           },
         };
         res.status(StatusCodes.OK).json(response);
