@@ -11,7 +11,7 @@ import { StatusCodes } from "http-status-codes";
 import { NextFunction } from "express";
 import GoalDTO from "../dtos/goalDTO";
 import Goal from "../models/Goal";
-import { UUIDV4 } from "sequelize";
+import { Op, UUIDV4 } from "sequelize";
 import Team from "../models/Team";
 import MatchDetailDTO from "../dtos/matchDetailDTO";
 import School from "../models/School";
@@ -20,6 +20,7 @@ import User from "../models/User";
 import {goal} from "../dtos/matchDetailDTO"
 
 class MatchService {
+  
   public static async addGoal(
     goalDTO: GoalDTO,
     tournamentId: UUID,
@@ -129,10 +130,39 @@ class MatchService {
   }
 
   public static async getAllMatchesByTournament(
-    tournamentId: UUID
+    tournamentId: UUID,
+    schoolId?: UUID
   ): Promise<MatchDetailDTO[]> {
+    const tournament: Tournament | null = await Tournament.findOne({
+      where: {
+        id: tournamentId
+      }
+    })
+    let school: School | null = null
+    if (!(schoolId === undefined)){
+      school = await School.findOne({where: {id: schoolId}})
+      if (school === null){
+        throw new ClientError(StatusCodes.NOT_FOUND, `School with id ${schoolId} not found`);
+      }
+    }
+    
+    if (tournament === null){
+      throw new ClientError(StatusCodes.NOT_FOUND, `Tournament with id ${tournamentId} not found`);
+    }
+
+    let whereCondition = {}
+    if (school !== null){
+      whereCondition = {
+        [Op.or] : {
+          "$TeamA.School.id$" : schoolId,
+          "$TeamB.School.id$": schoolId,
+        }
+      }
+    }
+
+
     let data = await Match.findAll({
-      where: {},
+      where: whereCondition,
       include: [
         {
           right: true,

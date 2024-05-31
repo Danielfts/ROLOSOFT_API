@@ -78,6 +78,7 @@ Student.hasMany(Goal, {
     name: "studentId",
     allowNull: false,
   },
+  as: "Goals",
 });
 Goal.belongsTo(Student, {
   foreignKey: {

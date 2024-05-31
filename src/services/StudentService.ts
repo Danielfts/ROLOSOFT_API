@@ -11,8 +11,69 @@ import ClientError from "../errors/ClientError";
 import { StatusCodes } from "http-status-codes";
 import TournamentService from "./TournamentService";
 import School from "../models/School";
+import Address from "../models/Address";
+import GreenCard from "../models/GreenCard";
+import { string } from "joi";
 
 class StudentService {
+  public static async findStudentsByTournamentAndSchool(
+    tournamentId: UUID,
+    schoolId: UUID
+  ): Promise<UserDTO[]> {
+    const studentUsers: User[] = await User.findAll({
+      include: [
+        {
+          model: Gender,
+        },
+        {
+          model: Address,
+        },
+        {
+          model: Student,
+          right: true,
+          include: [
+            {
+              model: Team,
+              right: true,
+              include: [
+                {
+                  model: School,
+                },
+              ],
+              where: {
+                tournamentId: tournamentId,
+                schoolId: schoolId,
+              },
+            },
+          ],
+        },
+      ],
+    });
+    const dtos: UserDTO[] = studentUsers.map((i): UserDTO => {
+      const dto: UserDTO = {
+        id: i.id,
+        CURP: i.CURP,
+        firstName: i.firstName,
+        lastName: i.lastName,
+        email: i.email,
+        birthDate: i.birthDate,
+        gender: i.Gender.name,
+        role: i.role,
+        phone: i.phone,
+        address: i.Address,
+        student: this.mapStudent(i.Student),
+      };
+      dto.student!.team = {
+        school: {
+          id: i.Student.Team.schoolId,
+          name: i.Student.Team.School.name,
+          number: i.Student.Team.School.number,
+        },
+      };
+      return dto;
+    });
+    return dtos;
+  }
   public static async registerStudentOnTeam(
     studentId: UUID,
     tournamentId: UUID,
@@ -47,7 +108,7 @@ class StudentService {
       fieldPosition: student.fieldPosition,
       shirtNumber: student.shirtNumber,
       IMSS: student.IMSS,
-      team : student.Team,
+      team: student.Team,
     };
     return dto;
   }
@@ -73,8 +134,11 @@ class StudentService {
     tournamentId: UUID | string
   ): Promise<UserDTO[]> {
     const tournament = await TournamentService.getTournamentById(tournamentId);
-    if (tournament === null){
-      throw new ClientError(StatusCodes.NOT_FOUND, `Tournament with id ${tournamentId} not found`)
+    if (tournament === null) {
+      throw new ClientError(
+        StatusCodes.NOT_FOUND,
+        `Tournament with id ${tournamentId} not found`
+      );
     }
 
     const result: Student[] = await Student.findAll({
@@ -84,10 +148,14 @@ class StudentService {
           "$Team.tournamentId$": tournamentId,
         },
       },
-      include: [{model: Team, include: [School]}, { model: User, include: [Gender] }],
+      include: [
+        { model: Team, include: [School] },
+        { model: User, include: [Gender] },
+      ],
     });
-    const users: UserDTO[] = await result.map((i) => {
+    const users: UserDTO[] = result.map((i) => {
       const dto: UserDTO = {
+        id: i.id,
         CURP: i.User.CURP,
         firstName: i.User.firstName,
         lastName: i.User.lastName,
@@ -100,12 +168,12 @@ class StudentService {
         student: this.mapStudent(i),
       };
       dto.student!.team = {
-        school : {
+        school: {
           id: i.Team.schoolId,
           name: i.Team.School.name,
-          number : i.Team.School.number
-        }
-      }
+          number: i.Team.School.number,
+        },
+      };
       return dto;
     });
     return users;
@@ -134,6 +202,26 @@ class StudentService {
       };
     });
     return data;
+  }
+
+  public static async addGreenCardToStudent(
+    studentId: UUID,
+    reason: string
+  ): Promise<any> {
+    const student: Student | null = await Student.findOne({
+      where: { id: studentId },
+    });
+    if (student === null) {
+      throw new ClientError(
+        StatusCodes.NOT_FOUND,
+        `Student with id ${studentId} not found`
+      );
+    }
+    const created = await GreenCard.create({
+      studentId: studentId,
+      reason: reason,
+    });
+    return created;
   }
 }
 

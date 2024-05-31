@@ -12,12 +12,34 @@ import { boolean } from "joi";
 import { UUID } from "crypto";
 
 class UserController {
+  public static async getStudentsByTournamentAndSchool(
+    req: Request,
+    res: Response,
+    next: NextFunction
+  ) {
+    try {
+      await UserService.validateUser(req.body.me.userId, Roles.admin);
+      const tournamentId: any = req.params.tournamentId;
+      const schoolId: any = req.params.schoolId;
+      const result = await StudentService.findStudentsByTournamentAndSchool(tournamentId, schoolId);
+      const response: JSONResponse = {
+        success: true,
+        message: `Students registered on tournament with id ${tournamentId}, and school with id ${schoolId} retrieved successfully`,
+        data: result
+      }
+      res.status(StatusCodes.OK).json(response)
+    } catch (error) {
+      next(error);
+    }
+  }
   public static async addStudentToTeam(
     req: Request,
     res: Response,
     next: NextFunction
   ) {
     try {
+      await UserService.validateUser(req.body.me.userId, Roles.admin);
+
       const studentId: any = req.params.studentId;
       const tournamentId: any = req.params.tournamentId;
       const schoolId: any = req.params.schoolId;
@@ -216,6 +238,28 @@ class UserController {
       res.status(StatusCodes.OK).json(response);
     } catch (error) {
       next(error);
+    }
+  }
+
+  public static async addGreenCardToStudent(
+    req: Request,
+    res: Response,
+    next: NextFunction
+  ) {
+    try {
+      const userId = req.body.me.userId;
+      const reason: string = req.body.reason;
+      const studentId: any = req.params.studentId;
+      await UserService.validateUser(userId, Roles.admin);
+      const result = await StudentService.addGreenCardToStudent(studentId, reason);
+      const response : JSONResponse  = {
+        success: true,
+        message: `Success adding green card to student with id ${studentId}`,
+        data: result,
+      }
+      res.status(StatusCodes.CREATED).json(response);
+    } catch (error) {
+      next(error)
     }
   }
 }

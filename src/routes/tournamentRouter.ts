@@ -55,6 +55,13 @@ tournamentRouter.get(
   UserController.getStudentsByTournament
 );
 
+// TEAM STUDENTS
+tournamentRouter.get(
+  "/:tournamentId/schools/:schoolId/players",
+  validateClient,
+  UserController.getStudentsByTournamentAndSchool
+)
+
 //  Add student to school in tournament
 tournamentRouter.post(
   "/:tournamentId/schools/:schoolId/students/:studentId",
@@ -85,6 +92,13 @@ tournamentRouter.get(
   MatchController.getAllMatchesByTournament
 );
 
+// GET BY TEAM
+tournamentRouter.get(
+  "/:tournamentId/schools/:schoolId/matches",
+  validateClient,
+  MatchController.getAllMatchesByTournamentAndSchool
+)
+
 //ADD GOAL
 tournamentRouter.post(
   "/:tournamentId/matches/:matchId",
@@ -107,5 +121,13 @@ tournamentRouter.get(
   validateClient,
   TournamentController.getGeneralTable
 )
+
+tournamentRouter.get(
+  "/:tournamentId/scoring-table",
+  validateClient,
+  TournamentController.getGoalTable
+)
+
+
 
 export default tournamentRouter;

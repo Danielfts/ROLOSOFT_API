@@ -11,6 +11,8 @@ import { sequelize } from "../config/db";
 import User from "./User";
 import { UUID } from "crypto";
 import Team from "./Team";
+import Goal from "./Goal";
+import GreenCard from "./GreenCard";
 
 class Student extends Model<
   InferAttributes<Student>,
@@ -20,11 +22,14 @@ class Student extends Model<
   declare fieldPosition: string;
   declare shirtNumber: number;
   declare IMSS: string;
+  declare photoUrl: CreationOptional<string>;
 
   declare teamId: ForeignKey<UUID | null>;
 
   declare Team: NonAttribute<Team>;
   declare User: NonAttribute<User>;
+  declare Goals: NonAttribute<Goal[]>;
+  declare GreenCards: NonAttribute<GreenCard[]>
 
 
   //Timestamps
@@ -44,7 +49,7 @@ Student.init(
       },
     },
     fieldPosition: {
-      type: DataTypes.UUID,
+      type: DataTypes.STRING,
     },
     shirtNumber: {
       type: DataTypes.INTEGER,
@@ -70,6 +75,11 @@ Student.init(
       type: DataTypes.DATE,
       allowNull: true,
     },
+    photoUrl: {
+      type: DataTypes.STRING,
+      allowNull: true,
+      defaultValue: "https://www.mykhel.com/thumb/190x90x190/football/players/4/19054.1527496212.jpg",
+    }
   },
   {
     sequelize,
