@@ -100,7 +100,6 @@ GeneralTable.init(
     sequelize,
     tableName: "GeneralTable",
     modelName: "GeneralTable",
-    paranoid: true,
     timestamps: true,
   }
 );

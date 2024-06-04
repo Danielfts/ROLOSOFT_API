@@ -115,19 +115,26 @@ tournamentRouter.get(
 )
 
 //STATISTICS
-
+//GENERAL TABLE
 tournamentRouter.get(
   "/:tournamentId/general-table",
   validateClient,
   TournamentController.getGeneralTable
 )
 
+//SCORING TABLE
 tournamentRouter.get(
   "/:tournamentId/scoring-table",
   validateClient,
   TournamentController.getGoalTable
 )
 
+//GENERAL TABLE BY TOURNAMENT
+tournamentRouter.get(
+  "/:tournamentId/schools/:schoolId/general-table",
+  validateClient,
+  TournamentController.getGeneralTableByTeam
+)
 
 
 export default tournamentRouter;

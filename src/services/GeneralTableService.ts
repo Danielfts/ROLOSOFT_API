@@ -44,6 +44,12 @@ class GeneralTableService {
       ],
     });
 
+    await GeneralTable.destroy({
+      where: {
+        teamId: tournamentSchools.map((s) => s.Team.id),
+      },
+    });
+
     let i = 0;
     for (let s of tournamentSchools) {
       const [instance, created] = await GeneralTable.findOrCreate({
@@ -233,6 +239,21 @@ class GeneralTableService {
         },
       ],
     });
+  }
+
+  public static async getGeneralTableByTeamId(teamId: UUID): Promise<GeneralTable> {
+    const result = await GeneralTable.findOne({
+      where: {
+        teamId: teamId,
+      },
+    });
+    if (result === null) {
+      throw new ServerError(
+        StatusCodes.NOT_FOUND,
+        `Couldn't find a general table for team with id ${teamId}`
+      );
+    }
+    return result;
   }
 }
 

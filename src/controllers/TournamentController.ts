@@ -8,8 +8,11 @@ import Roles from "../models/Roles";
 import GeneralTableService from "../services/GeneralTableService";
 import GoalTableService from "../services/GoalTableService";
 import GoalTableRowDTO from "../dtos/goalTableRowDTO";
+import SchoolService from "../services/SchoolService";
+import TeamService from "../services/TeamService";
 
 class TournamentController {
+
   static async searchStudentsAndSchools(
     req: Request,
     res: Response,
@@ -109,6 +112,27 @@ class TournamentController {
         success: true,
         message: `Goal table for tournament with id ${tournamentId} retrieved successfully`,
         data: goalTable,
+      };
+      res.status(StatusCodes.OK).json(response);
+    } catch (error) {
+      next(error);
+    }
+  }
+
+  public static async getGeneralTableByTeam(
+    req: Request,
+    res: Response,
+    next: NextFunction
+  ) {
+    try {
+      await UserService.validateUser(req.body.me.userId);
+      const tournamentId: any = req.params.tournamentId;
+      const schoolId: any = req.params.schoolId;
+      const result = await TeamService.getTeamStatistics(tournamentId, schoolId);
+      const response: JSONResponse = {
+        success: true,
+        message: `General table for team with id ${schoolId} in tournament with id ${tournamentId} retrieved successfully`,
+        data: result,
       };
       res.status(StatusCodes.OK).json(response);
     } catch (error) {

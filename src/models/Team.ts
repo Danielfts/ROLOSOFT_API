@@ -24,7 +24,6 @@ class Team extends Model<InferAttributes<Team>, InferCreationAttributes<Team>> {
   declare tournamentId: ForeignKey<UUID>;
   declare points: CreationOptional<number>;
   declare phaseId: CreationOptional<ForeignKey<UUID>>;
-  declare photoUrl: CreationOptional<string>;
   // TODO declare phase stuff
 
   declare Phase: NonAttribute<Phase>;
@@ -77,11 +76,6 @@ Team.init(
     points: {
       type: DataTypes.INTEGER,
       defaultValue: 0,
-    },
-    photoUrl: {
-      type: DataTypes.STRING,
-      defaultValue:
-        "https://upload.wikimedia.org/wikipedia/commons/thumb/5/58/Escudo_de_Independiente_Santa_Fe.png/150px-Escudo_de_Independiente_Santa_Fe.png",
     },
   },
   {

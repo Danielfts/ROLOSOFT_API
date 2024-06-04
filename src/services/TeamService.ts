@@ -1,12 +1,13 @@
 import { StatusCodes } from "http-status-codes";
 import teamDTO from "../dtos/teamDTO";
-import ServerError from "../errors/ServerError";
 import School from "../models/School";
 import Team from "../models/Team";
 import Tournament from "../models/Tournament";
 import { UUID } from "crypto";
 import ClientError from "../errors/ClientError";
-import { TimeoutError } from "sequelize";
+import teamStatisticsDTO from "../dtos/teamStatisticsDTO";
+import GeneralTableService from "./GeneralTableService";
+
 
 class TeamService {
   public static mapTeam(team: Team): teamDTO {
@@ -98,6 +99,28 @@ class TeamService {
       throw new ClientError(StatusCodes.NOT_FOUND, `Couldn't find a team for school with id ${schoolId} on tournament with id ${tournamentId}`)
     }
     return result[0];
+  }
+
+  public static async getTeamStatistics(tournamentId: UUID, schoolId: UUID): Promise<teamStatisticsDTO>{
+    
+    const team: Team = await TeamService.getTeamByTournamentAndSchool(tournamentId, schoolId);
+    await GeneralTableService.updateGeneralTable(tournamentId);
+    const generalTable = await GeneralTableService.getGeneralTableByTeamId(team.id);
+    const teamStatistics: teamStatisticsDTO = {
+      tournamentId: tournamentId,
+      schoolId: schoolId,
+      schoolName: team.School.name,
+      defeats: generalTable.defeats,
+      draws: generalTable.draws,
+      victories: generalTable.victories,
+      goalsFor: generalTable.goalsFor,
+      goalsAgainst: generalTable.goalsAgainst,
+      goalDifference: generalTable.goalDifference,
+      gamesPlayed: generalTable.gamesPlayed,
+      points: generalTable.points,
+      position: generalTable.position,
+    }
+    return teamStatistics;
   }
 }
 
