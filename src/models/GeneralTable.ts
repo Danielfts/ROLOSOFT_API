@@ -10,7 +10,6 @@ import {
 } from "sequelize";
 import { UUID } from "crypto";
 import Team from "./Team";
-import { number } from "joi";
 
 class GeneralTable extends Model<
   InferAttributes<GeneralTable>,
