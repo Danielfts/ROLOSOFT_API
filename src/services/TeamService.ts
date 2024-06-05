@@ -119,6 +119,7 @@ class TeamService {
       gamesPlayed: generalTable.gamesPlayed,
       points: generalTable.points,
       position: generalTable.position,
+      shieldFileName: team.School.shieldFileName,
     }
     return teamStatistics;
   }

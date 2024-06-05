@@ -17,6 +17,18 @@ import UserDTO from "../dtos/userDTO";
 import Gender from "../models/Gender";
 
 class SchoolService {
+  public static async setSchoolShield(schoolId: any, file: Express.Multer.File | undefined, fullPath: string): Promise<string> {
+    const school = await School.findByPk(schoolId);
+    if (school === null) {
+      throw new ClientError(StatusCodes.NOT_FOUND, `School with id ${schoolId} not found`);
+    }
+    if (file === undefined) {
+      throw new ClientError(StatusCodes.BAD_REQUEST, "No file was uploaded");
+    }
+    school.shieldFileName = file.filename;
+    await school.save();
+    return file.filename;
+  }
   public static async createSchool(school: SchoolDTO): Promise<SchoolDTO> {
     return await sequelize.transaction<SchoolDTO>(async (t) => {
       const address = await AddressService.createAddress(school.address, t);
@@ -185,6 +197,7 @@ class SchoolService {
   private static mapSchool(school: School, includeStudents?:boolean): SchoolDTO {
     const dto: SchoolDTO = {
       id: school.id,
+      shieldFileName: school.shieldFileName,
       name: school.name,
       number: school.number,
       address: school.Address && {

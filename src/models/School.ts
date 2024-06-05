@@ -11,6 +11,7 @@ class School extends Model <InferAttributes<School>, InferCreationAttributes<Sch
   declare number: number;
   declare addressId: UUID;
   declare Address : NonAttribute<Address>;
+  declare shieldFileName: CreationOptional<string>;
 
   declare getAddress: BelongsToGetAssociationMixin<Address>;
   
@@ -52,6 +53,11 @@ School.init({
   deletedAt: {
     type: DataTypes.DATE,
     allowNull: true,
+  },
+  shieldFileName: {
+    type: DataTypes.STRING,
+    allowNull: false,
+    defaultValue: "https://upload.wikimedia.org/wikipedia/commons/thumb/5/58/Escudo_de_Independiente_Santa_Fe.png/150px-Escudo_de_Independiente_Santa_Fe.png",
   }
 }, {
   sequelize,

@@ -13,6 +13,7 @@ interface teamStatisticsDTO {
   goalDifference: number;
   gamesPlayed: number;
   points: number;
-};
+  shieldFileName: string;
+}
 
 export default teamStatisticsDTO;

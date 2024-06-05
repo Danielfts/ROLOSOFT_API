@@ -7,8 +7,37 @@ import UserService from "../services/UserService";
 import Roles from "../models/Roles";
 import { UUID } from "crypto";
 import TeamService from "../services/TeamService";
+import School from "../models/School";
 
 class SchoolController {
+  public static async setSchoolShield(
+    req: Request,
+    res: Response,
+    next: NextFunction
+  ) {
+    try {
+      await UserService.validateUser(req.body.me.userId, Roles.admin);
+      const schoolId: any = req.params.schoolId;
+      const result: string = await SchoolService.setSchoolShield(
+        schoolId,
+        req.file,
+        process.env.FILE_DIR!
+      );
+
+      const response: JSONResponse = {
+        success: true,
+        message:
+          "School shield set successfully for school with id: " +
+          schoolId +
+          ". Image saved on /static/" +
+          result,
+        data: { filename: result },
+      };
+      res.status(StatusCodes.CREATED).json(response);
+    } catch (error) {
+      next(error);
+    }
+  }
   public static async setTeamPoints(
     req: Request,
     res: Response,
@@ -19,8 +48,12 @@ class SchoolController {
       const points: number = req.body.points;
       const tournamentId: any = req.params.tournamentId;
       const schoolId: any = req.params.schoolId;
-      const result: number = await TeamService.setTeamPoints(tournamentId, schoolId, points);
-      if (result === 1){
+      const result: number = await TeamService.setTeamPoints(
+        tournamentId,
+        schoolId,
+        points
+      );
+      if (result === 1) {
         const response: JSONResponse = {
           success: true,
           message: `The points for the team of school with id ${schoolId} on tournament with id ${tournamentId} have been set to ${points}`,

@@ -8,5 +8,6 @@ interface SchoolDTO {
   address: addressDTO;
   sponsor?: string;
   students?: any
+  shieldFileName?: string;
 }
 export default SchoolDTO;
