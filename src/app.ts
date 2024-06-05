@@ -30,6 +30,10 @@ app.use(express.json());
 app.use(router);
 app.use(globalErrorHandler);
 
+const dir = process.env.FILE_DIR;
+console.log(dir);
+app.use('/static', express.static(dir!))
+
 force = true;
 
 async function main() {
