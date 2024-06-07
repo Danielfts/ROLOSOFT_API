@@ -224,14 +224,14 @@ class MatchService {
           id: m.TeamA.schoolId,
           name: m.TeamA.School.name,
           points: m.TeamA.points,
-          shieldImg: undefined,
+          shieldFileName: m.TeamA.School.shieldFileName,
           goals: goalsInFavorOfA
         },
         teamB: {
           id: m.TeamB.schoolId,
           name: m.TeamB.School.name,
           points: 0,
-          shieldImg: undefined,
+          shieldFileName: m.TeamB.School.shieldFileName,
           goals: goalsInFavorOfB
         },
         isPlaying: true

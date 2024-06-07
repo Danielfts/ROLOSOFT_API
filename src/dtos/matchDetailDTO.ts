@@ -12,7 +12,7 @@ export interface team {
   id: UUID | string,
   name: string,
   points: number,
-  shieldImg: any,
+  shieldFileName: any,
   goals: goal[]
 }
 
