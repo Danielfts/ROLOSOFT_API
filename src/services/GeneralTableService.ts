@@ -215,8 +215,7 @@ class GeneralTableService {
         gamesPlayed: gt.gamesPlayed,
 
         //TODO REMOVE DUMMY DATA
-        photoUrl:
-          "https://upload.wikimedia.org/wikipedia/commons/thumb/5/58/Escudo_de_Independiente_Santa_Fe.png/150px-Escudo_de_Independiente_Santa_Fe.png",
+        shieldFileName: gt.Team.School.shieldFileName,
       };
     });
 
