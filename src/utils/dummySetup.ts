@@ -1,5 +1,6 @@
 import Address from "../models/Address";
 import Gender from "../models/Gender";
+import Goal from "../models/Goal";
 import Match from "../models/Match";
 import Phase from "../models/Phase";
 import Roles from "../models/Roles";
@@ -251,12 +252,27 @@ export async function setupDummy(): Promise<void> {
     },
   });
 
+  //  AMERICA VS SANTAFE
   const match1 = await Match.create({
     phaseId: quarterFinals!.id!,
     startDate: new Date(),
     endDate: new Date(),
     teamAId: teamAmerica.id!,
     teamBId: teamSantafe.id!,
+  });
+
+  let goal = await Goal.create({
+    matchId: match1.id!,
+    studentId: estudianteA.id!,
+    teamId: teamSantafe.id!,
+    minute: 10,
+  });
+  
+  goal = await Goal.create({
+    matchId: match1.id!,
+    studentId: estudianteA.id!,
+    teamId: teamSantafe.id!,
+    minute: 20,
   });
 
   const match2 = await Match.create({
