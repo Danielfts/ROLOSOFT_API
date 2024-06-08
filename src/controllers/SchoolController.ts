@@ -20,8 +20,7 @@ class SchoolController {
       const schoolId: any = req.params.schoolId;
       const result: string = await SchoolService.setSchoolShield(
         schoolId,
-        req.file,
-        process.env.FILE_DIR!
+        req.file
       );
 
       const response: JSONResponse = {

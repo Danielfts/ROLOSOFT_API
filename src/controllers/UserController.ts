@@ -12,6 +12,31 @@ import { boolean } from "joi";
 import { UUID } from "crypto";
 
 class UserController {
+  public static async uploadPhoto(
+    req: Request,
+    res: Response,
+    next: NextFunction
+  ) {
+    try {
+      await UserService.validateUser(req.body.me.userId, Roles.admin);
+      const studentId: any = req.params.studentId;
+      const result = await StudentService.setPhotoFileName(studentId, req.file);
+      const response: JSONResponse = {
+        success: true,
+        message:
+          "Profile picture set successfully for student with id: " +
+          studentId +
+          ". Image saved on /static/" +
+          result,
+        data: { filename: result },
+      };
+      
+      res.status(StatusCodes.CREATED).json(response);
+
+    } catch (error) {
+      next(error)
+    }
+  }
   public static async getStudentsByTournamentAndSchool(
     req: Request,
     res: Response,

@@ -22,7 +22,7 @@ class Student extends Model<
   declare fieldPosition: string;
   declare shirtNumber: number;
   declare IMSS: string;
-  declare photoUrl: CreationOptional<string>;
+  declare photoFileName: CreationOptional<string>;
 
   declare teamId: ForeignKey<UUID | null>;
 
@@ -75,10 +75,10 @@ Student.init(
       type: DataTypes.DATE,
       allowNull: true,
     },
-    photoUrl: {
+    photoFileName: {
       type: DataTypes.STRING,
       allowNull: true,
-      defaultValue: "https://www.mykhel.com/thumb/190x90x190/football/players/4/19054.1527496212.jpg",
+      defaultValue: "default-profile.png",
     }
   },
   {

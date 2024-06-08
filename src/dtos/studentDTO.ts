@@ -6,7 +6,8 @@ interface StudentDTO {
     fieldPosition: string;
     shirtNumber: number;
     IMSS: string;
-    team?: any
+    team?: any;
+    photoFileName?: string;
 }
 
 export default StudentDTO;

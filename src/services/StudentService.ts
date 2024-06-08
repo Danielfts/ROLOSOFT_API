@@ -16,6 +16,7 @@ import GreenCard from "../models/GreenCard";
 import { string } from "joi";
 
 class StudentService {
+  
   public static async findStudentsByTournamentAndSchool(
     tournamentId: UUID,
     schoolId: UUID
@@ -109,6 +110,7 @@ class StudentService {
       shirtNumber: student.shirtNumber,
       IMSS: student.IMSS,
       team: student.Team,
+      photoFileName: student.photoFileName,
     };
     return dto;
   }
@@ -222,6 +224,35 @@ class StudentService {
       reason: reason,
     });
     return created;
+  }
+
+  public static async setPhotoFileName(studentId: any, file: Express.Multer.File | undefined) {
+    const student: Student | null = await Student.findOne({
+      where: { id: studentId },
+    });
+    if (student === null) {
+      throw new ClientError(
+        StatusCodes.NOT_FOUND,
+        `Student with id ${studentId} not found`
+      );
+    }
+    if (file === undefined) {
+      throw new ClientError(
+        StatusCodes.BAD_REQUEST,
+        `File is required`
+      );
+    }
+    const updated = await Student.update(
+      {
+        photoFileName: file.filename,
+      },
+      {
+        where: {
+          id: studentId,
+        },
+      }
+    );
+    return file.filename;
   }
 }
 

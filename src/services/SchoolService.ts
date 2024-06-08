@@ -17,7 +17,7 @@ import UserDTO from "../dtos/userDTO";
 import Gender from "../models/Gender";
 
 class SchoolService {
-  public static async setSchoolShield(schoolId: any, file: Express.Multer.File | undefined, fullPath: string): Promise<string> {
+  public static async setSchoolShield(schoolId: any, file: Express.Multer.File | undefined): Promise<string> {
     const school = await School.findByPk(schoolId);
     if (school === null) {
       throw new ClientError(StatusCodes.NOT_FOUND, `School with id ${schoolId} not found`);
