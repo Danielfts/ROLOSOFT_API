@@ -13,6 +13,10 @@ import User from "../models/User";
 import School from "../models/School";
 import Team from "../models/Team";
 import { UUID } from "crypto";
+import GeneralTable from "../models/GeneralTable";
+import GeneralTableService from "./GeneralTableService";
+import GreenCard from "../models/GreenCard";
+import Goal from "../models/Goal";
 
 class TournamentService {
   public static async searchStudentsAndSchools(
@@ -21,9 +25,12 @@ class TournamentService {
   ): Promise<object> {
     const tournament = await Tournament.findByPk(tournamentId);
     if (tournament === null) {
-      throw new ClientError(StatusCodes.NOT_FOUND, `Couln't find a tournament with id ${tournamentId}`)
+      throw new ClientError(
+        StatusCodes.NOT_FOUND,
+        `Couln't find a tournament with id ${tournamentId}`
+      );
     }
-
+    await GeneralTableService.updateGeneralTable(tournamentId);
     let userCondition: any | null = {
       [Op.or]: [
         {
@@ -40,12 +47,23 @@ class TournamentService {
     };
 
     const userStudents = await User.findAll({
-      where: searchTerm === "" || searchTerm === undefined ? undefined : userCondition,
+      where:
+        searchTerm === "" || searchTerm === undefined
+          ? undefined
+          : userCondition,
       include: [
         {
           model: Student,
           right: true,
           include: [
+            {
+              model: GreenCard,
+              as: "GreenCards",
+            },
+            {
+              model: Goal,
+              as: "Goals",
+            },
             {
               model: Team,
               where: {
@@ -53,9 +71,9 @@ class TournamentService {
               },
               include: [
                 {
-                  model: School
-                }
-              ]
+                  model: School,
+                },
+              ],
             },
           ],
         },
@@ -82,6 +100,12 @@ class TournamentService {
           where: {
             tournamentId: tournamentId,
           },
+          include: [
+            {
+              model: GeneralTable,
+              as: "Statistics",
+            },
+          ],
         },
       ],
     });
@@ -91,8 +115,8 @@ class TournamentService {
         const dto = {
           id: s.id,
           name: s.name,
-          number: s.number,
-          points: s.Team.points,
+          position: s.Team.Statistics.position,
+          points: s.Team.Statistics.points,
           shieldFileName: s.shieldFileName,
         };
         return dto;
@@ -105,8 +129,8 @@ class TournamentService {
           teamId: s.Student.teamId,
           shieldFileName: s.Student.Team.School.shieldFileName,
           photoFileName: s.Student.photoFileName,
-          goals: 0,
-          greenCards: 0,
+          goals: s.Student.Goals.length,
+          greenCards: s.Student.GreenCards.length,
         };
         return dto;
       }),

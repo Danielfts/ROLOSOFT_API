@@ -112,6 +112,7 @@ GeneralTable.belongsTo(Team, {
 });
 
 Team.hasOne(GeneralTable, {
+  as: "Statistics",
   foreignKey: {
     name: "teamId",
     allowNull: false,

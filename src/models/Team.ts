@@ -16,6 +16,7 @@ import { UUID } from "crypto";
 import Tournament from "./Tournament";
 import { allow } from "joi";
 import Student from "./Student";
+import GeneralTable from "./GeneralTable";
 
 class Team extends Model<InferAttributes<Team>, InferCreationAttributes<Team>> {
   declare id: CreationOptional<UUID>;
@@ -30,6 +31,7 @@ class Team extends Model<InferAttributes<Team>, InferCreationAttributes<Team>> {
   declare School: NonAttribute<School>;
   declare Tournament: NonAttribute<Tournament>;
   declare Students: NonAttribute<Student[]>;
+  declare Statistics: NonAttribute<GeneralTable>;
 
   declare getSchool: BelongsToGetAssociationMixin<School>;
   declare getTournament: BelongsToGetAssociationMixin<Tournament>;

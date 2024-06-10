@@ -72,6 +72,7 @@ Student.hasMany(GreenCard, {
 })
 
 GreenCard.belongsTo(Student, {
+  as: "GreenCards",
   foreignKey: {
     name: "studentId"
   }
