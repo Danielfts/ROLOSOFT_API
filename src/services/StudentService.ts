@@ -34,6 +34,10 @@ class StudentService {
           right: true,
           include: [
             {
+              model: GreenCard,
+              as: "GreenCards",
+            },
+            {
               model: Team,
               right: true,
               include: [
@@ -111,6 +115,7 @@ class StudentService {
       IMSS: student.IMSS,
       team: student.Team,
       photoFileName: student.photoFileName,
+      greenCards: student.GreenCards || [],
     };
     return dto;
   }
@@ -153,6 +158,7 @@ class StudentService {
       include: [
         { model: Team, include: [School] },
         { model: User, include: [Gender] },
+        { model: GreenCard, as: "GreenCards"}
       ],
     });
     const users: UserDTO[] = result.map((i) => {

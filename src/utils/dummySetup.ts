@@ -1,6 +1,7 @@
 import Address from "../models/Address";
 import Gender from "../models/Gender";
 import Goal from "../models/Goal";
+import GreenCard from "../models/GreenCard";
 import Match from "../models/Match";
 import Phase from "../models/Phase";
 import Roles from "../models/Roles";
@@ -70,6 +71,11 @@ export async function setupDummy(): Promise<void> {
       postalCode: "00000",
       country: "País",
     },
+  });
+
+  await GreenCard.create({
+    studentId: estudianteA.id!,
+    reason: "Muestra de amor al arbitro",
   });
 
   
