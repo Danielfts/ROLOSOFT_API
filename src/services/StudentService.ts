@@ -14,9 +14,9 @@ import School from "../models/School";
 import Address from "../models/Address";
 import GreenCard from "../models/GreenCard";
 import { string } from "joi";
+import Tournament from "../models/Tournament";
 
 class StudentService {
-  
   public static async findStudentsByTournamentAndSchool(
     tournamentId: UUID,
     schoolId: UUID
@@ -158,7 +158,7 @@ class StudentService {
       include: [
         { model: Team, include: [School] },
         { model: User, include: [Gender] },
-        { model: GreenCard, as: "GreenCards"}
+        { model: GreenCard, as: "GreenCards" },
       ],
     });
     const users: UserDTO[] = result.map((i) => {
@@ -190,6 +190,15 @@ class StudentService {
   public static async findStudentsNotOnTournament(
     tournamentId: UUID | string
   ): Promise<any[]> {
+    const tournament: Tournament | null = await Tournament.findByPk(
+      tournamentId
+    );
+    if (tournament === null) {
+      throw new ClientError(
+        StatusCodes.NOT_FOUND,
+        `Tournament with id ${tournamentId} not found`
+      );
+    }
     const result: Student[] = await Student.findAll({
       where: {
         [Op.or]: {
@@ -204,7 +213,7 @@ class StudentService {
       return {
         firstName: i.User.firstName,
         lastName: i.User.lastName,
-        curp: i.User.CURP,
+        CURP: i.User.CURP,
         email: i.User.email,
         id: i.id,
       };
@@ -232,7 +241,10 @@ class StudentService {
     return created;
   }
 
-  public static async setPhotoFileName(studentId: any, file: Express.Multer.File | undefined) {
+  public static async setPhotoFileName(
+    studentId: any,
+    file: Express.Multer.File | undefined
+  ) {
     const student: Student | null = await Student.findOne({
       where: { id: studentId },
     });
@@ -243,10 +255,7 @@ class StudentService {
       );
     }
     if (file === undefined) {
-      throw new ClientError(
-        StatusCodes.BAD_REQUEST,
-        `File is required`
-      );
+      throw new ClientError(StatusCodes.BAD_REQUEST, `File is required`);
     }
     const updated = await Student.update(
       {
