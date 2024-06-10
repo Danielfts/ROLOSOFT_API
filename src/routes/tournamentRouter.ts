@@ -62,6 +62,13 @@ tournamentRouter.get(
   UserController.getStudentsByTournamentAndSchool
 )
 
+// STUDENT DETAIL
+tournamentRouter.get(
+  "/:tournamentId/players/:studentId",
+  validateClient,
+  UserController.getStudentDetail
+)
+
 //  Add student to school in tournament
 tournamentRouter.post(
   "/:tournamentId/schools/:schoolId/students/:studentId",

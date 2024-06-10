@@ -15,6 +15,7 @@ import Address from "../models/Address";
 import GreenCard from "../models/GreenCard";
 import { string } from "joi";
 import Tournament from "../models/Tournament";
+import Goal from "../models/Goal";
 
 class StudentService {
   public static async findStudentsByTournamentAndSchool(
@@ -268,6 +269,37 @@ class StudentService {
       }
     );
     return file.filename;
+  }
+
+  public static async getStudentDetail(studentId: any): Promise<any> {
+    const student: Student | null = await Student.findByPk(studentId, {
+      include: [
+        {
+          model: Goal,
+          as: "Goals"
+        },
+        {
+          model: GreenCard,
+          as: "GreenCards"
+        },
+        {
+          model: User
+        }
+      ]
+    });
+    if (student === null) {
+      throw new ClientError(StatusCodes.NOT_FOUND, `Student with id ${studentId} not found`)
+    }
+    const dto = {
+      photoFileName: student?.photoFileName,
+      firstName: student.User.firstName,
+      lastName: student.User.lastName,
+      shirtNumber: student.shirtNumber,
+      fieldPosition: student.fieldPosition,
+      goals: student.Goals.length,
+      greenCards: student.GreenCards.length,
+      shieldFileName: student.Team.School.shieldFileName,
+    }
   }
 }
 

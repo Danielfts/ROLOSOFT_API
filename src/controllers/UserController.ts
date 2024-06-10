@@ -30,11 +30,10 @@ class UserController {
           result,
         data: { filename: result },
       };
-      
-      res.status(StatusCodes.CREATED).json(response);
 
+      res.status(StatusCodes.CREATED).json(response);
     } catch (error) {
-      next(error)
+      next(error);
     }
   }
   public static async getStudentsByTournamentAndSchool(
@@ -46,13 +45,16 @@ class UserController {
       await UserService.validateUser(req.body.me.userId, Roles.admin);
       const tournamentId: any = req.params.tournamentId;
       const schoolId: any = req.params.schoolId;
-      const result = await StudentService.findStudentsByTournamentAndSchool(tournamentId, schoolId);
+      const result = await StudentService.findStudentsByTournamentAndSchool(
+        tournamentId,
+        schoolId
+      );
       const response: JSONResponse = {
         success: true,
         message: `Students registered on tournament with id ${tournamentId}, and school with id ${schoolId} retrieved successfully`,
-        data: result
-      }
-      res.status(StatusCodes.OK).json(response)
+        data: result,
+      };
+      res.status(StatusCodes.OK).json(response);
     } catch (error) {
       next(error);
     }
@@ -276,15 +278,40 @@ class UserController {
       const reason: string = req.body.reason;
       const studentId: any = req.params.studentId;
       await UserService.validateUser(userId, Roles.admin);
-      const result = await StudentService.addGreenCardToStudent(studentId, reason);
-      const response : JSONResponse  = {
+      const result = await StudentService.addGreenCardToStudent(
+        studentId,
+        reason
+      );
+      const response: JSONResponse = {
         success: true,
         message: `Success adding green card to student with id ${studentId}`,
         data: result,
-      }
+      };
       res.status(StatusCodes.CREATED).json(response);
     } catch (error) {
-      next(error)
+      next(error);
+    }
+  }
+
+  public static async getStudentDetail(
+    req: Request,
+    res: Response,
+    next: NextFunction
+  ) {
+    try {
+      await UserService.validateUser(req.body.me);
+      const tournamentId: any = req.params.tournamentId;
+      const studentId: any = req.params.studentId;
+
+      const result : any = await StudentService.getStudentDetail(studentId);
+      const response: JSONResponse = {
+        success: true,
+        message: `Detail data for student with id ${studentId} retrieved successfully`,
+        data: result,
+      }
+      res.status(StatusCodes.OK).json(response);
+    } catch (error) {
+      next(error);
     }
   }
 }
