@@ -71,8 +71,8 @@ class GoalTableService {
         position: position,
         points:  student.Student.GreenCards.length,
         schoolId: team.School?.id || "",
-        playerPhotoUrl: student.Student.photoFileName || "",
-        teamPhotoUrl: student.Student.Team?.School.shieldFileName || "",
+        photoFileName: student.Student.photoFileName || "",
+        shieldFileName: student.Student.Team?.School.shieldFileName || "",
       };
       position++;
       return studentDTO;

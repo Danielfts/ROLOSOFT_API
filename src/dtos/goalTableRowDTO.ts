@@ -3,8 +3,8 @@ import { UUID } from "crypto";
 interface GoalTableRowDTO {
   studentId: UUID,
   position: number,
-  playerPhotoUrl: string,
-  teamPhotoUrl: string,
+  photoFileName: string,
+  shieldFileName: string,
   firstName: string,
   lastName: string,
   teamName: string,
