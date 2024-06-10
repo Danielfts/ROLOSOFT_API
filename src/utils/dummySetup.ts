@@ -281,6 +281,8 @@ export async function setupDummy(): Promise<void> {
     minute: 20,
   });
 
+  let date:Date = new Date()
+
   const match2 = await Match.create({
     phaseId: quarterFinals!.id!,
     startDate: new Date(),
@@ -312,23 +314,25 @@ export async function setupDummy(): Promise<void> {
       name: "SEMIFINAL",
     },
   });
-
+  date.setDate(date.getDate() + 1)
+  
   const match5 = await Match.create({
     phaseId: semiFinals!.id!,
-    startDate: new Date(),
-    endDate: new Date(),
+    startDate: date,
+    endDate: date,
     teamAId: teamSantafe.id!,
     teamBId: teamNacional.id!,
   });
 
   const match6 = await Match.create({
     phaseId: semiFinals!.id!,
-    startDate: new Date(),
-    endDate: new Date(),
+    startDate: date,
+    endDate: date,
     teamAId: teamRayados.id!,
     teamBId: teamJunior.id!,
   });
-
+  
+  
   // THERE IS 1 FINAL MATCH: SANTA FE VS RAYADOS
 
   const final = await Phase.findOne({
@@ -337,10 +341,12 @@ export async function setupDummy(): Promise<void> {
     },
   });
 
+  date.setDate(date.getDate() + 1)
+
   const match7 = await Match.create({
     phaseId: final!.id!,
-    startDate: new Date(),
-    endDate: new Date(),
+    startDate: date,
+    endDate: date,
     teamAId: teamSantafe.id!,
     teamBId: teamRayados.id!,
   });
