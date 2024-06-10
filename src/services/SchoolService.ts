@@ -227,6 +227,7 @@ class SchoolService {
               fieldPosition: i.fieldPosition,
               shirtNumber: i.shirtNumber,
               IMSS: i.IMSS,
+              photoFileName: i.photoFileName
             },
           };
           return userDto;

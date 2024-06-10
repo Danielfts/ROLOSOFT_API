@@ -6,6 +6,7 @@ export interface goal {
   lastName: string,
   minute: number,
   playerNumber: number
+  photoFileName?: string
 }
 
 export interface team {

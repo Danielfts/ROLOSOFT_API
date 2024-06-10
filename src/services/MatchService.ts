@@ -208,7 +208,8 @@ class MatchService {
           name: g.Student.User.firstName,
           lastName: g.Student.User.lastName,
           minute: g.minute,
-          playerNumber: g.Student.shirtNumber
+          playerNumber: g.Student.shirtNumber,
+          photoFileName: g.Student.photoFileName
         }
         if (g.ForTeam.id === m.TeamA.id){
           goalsInFavorOfA.push(goalDTO)
