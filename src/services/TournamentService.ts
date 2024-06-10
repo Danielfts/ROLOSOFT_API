@@ -51,6 +51,11 @@ class TournamentService {
               where: {
                 tournamentId: tournamentId,
               },
+              include: [
+                {
+                  model: School
+                }
+              ]
             },
           ],
         },
@@ -88,7 +93,7 @@ class TournamentService {
           name: s.name,
           number: s.number,
           points: s.Team.points,
-          logoUrl: "",
+          shieldFileName: s.shieldFileName,
         };
         return dto;
       }),
@@ -98,8 +103,8 @@ class TournamentService {
           firstName: s.firstName,
           lastName: s.lastName,
           teamId: s.Student.teamId,
-          teamLogoUrl: "",
-          studentPhotoUrl: "",
+          shieldFileName: s.Student.Team.School.shieldFileName,
+          photoFileName: s.Student.photoFileName,
           goals: 0,
           greenCards: 0,
         };
