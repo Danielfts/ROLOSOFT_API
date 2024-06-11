@@ -299,7 +299,7 @@ class UserController {
     next: NextFunction
   ) {
     try {
-      await UserService.validateUser(req.body.me);
+      await UserService.validateUser(req.body.me.userId);
       const tournamentId: any = req.params.tournamentId;
       const studentId: any = req.params.studentId;
 

@@ -3,7 +3,7 @@ import addressDTO from "./addressDTO";
 
 interface SchoolDTO {
   id?: UUID;
-  number: number;
+  clave: string;
   name: string;
   address: addressDTO;
   sponsor?: string;

@@ -12,11 +12,13 @@ import Tournament from "../models/Tournament";
 import User from "../models/User";
 import PhaseService from "../services/PhaseService";
 import UserService from "../services/UserService";
+import fs from "fs";
+import { parse } from "csv-parse/sync";
+import UserDTO from "../dtos/userDTO";
 
 export async function setupDummy(): Promise<void> {
-
   // GENDERS
-  const genders : Gender[] | null = await Gender.findAll();
+  const genders: Gender[] | null = await Gender.findAll();
 
   // ADMIN USER
   const adminAddress: Address = await Address.create({
@@ -78,8 +80,6 @@ export async function setupDummy(): Promise<void> {
     reason: "Muestra de amor al arbitro",
   });
 
-  
-
   // TOURNAMENT ADDRESS
   const tournamentAddress: Address = await Address.create({
     address1: "Calle 1",
@@ -90,8 +90,8 @@ export async function setupDummy(): Promise<void> {
     country: "País",
   });
 
-  const today : Date = new Date();
-  const todayPlusOneMonth : Date = new Date();
+  const today: Date = new Date();
+  const todayPlusOneMonth: Date = new Date();
 
   // TOURNAMENT
   todayPlusOneMonth.setMonth(todayPlusOneMonth.getMonth() + 1);
@@ -116,7 +116,7 @@ export async function setupDummy(): Promise<void> {
   });
 
   const schoolAmerica = await School.create({
-    number: 1,
+    clave: "19USW2550M",
     name: "América",
     addressId: schoolAddress.id!,
     shieldFileName: "escudo-america.png",
@@ -128,12 +128,12 @@ export async function setupDummy(): Promise<void> {
     sponsor: "FEMSA",
     points: 0,
   });
-  
+
   const schoolSantafe = await School.create({
-    number: 2,
+    clave: "80QPJ1865X",
     name: "Santa Fe",
     addressId: schoolAddress.id!,
-    shieldFileName: "escudo-santa-fe.png"
+    shieldFileName: "escudo-santa-fe.png",
   });
 
   const teamSantafe = await Team.create({
@@ -147,12 +147,11 @@ export async function setupDummy(): Promise<void> {
   createdStudentA!.teamId = teamSantafe.id!;
   await createdStudentA!.save();
 
-
   const schoolPumas = await School.create({
-    number: 3,
+    clave: "05YXC5371A",
     name: "Pumas",
     addressId: schoolAddress.id!,
-    shieldFileName: "escudo-pumas.png"
+    shieldFileName: "escudo-pumas.png",
   });
 
   const teamPumas = await Team.create({
@@ -163,10 +162,10 @@ export async function setupDummy(): Promise<void> {
   });
 
   const schoolNacional = await School.create({
-    number: 4,
+    clave: "09OJS1191V",
     name: "Atlético Nacional",
     addressId: schoolAddress.id!,
-    shieldFileName: "escudo-nacional.png"
+    shieldFileName: "escudo-nacional.png",
   });
 
   const teamNacional = await Team.create({
@@ -177,10 +176,10 @@ export async function setupDummy(): Promise<void> {
   });
 
   const schoolRayados = await School.create({
-    number: 5,
+    clave: "20PEV5435I",
     name: "Rayados",
     addressId: schoolAddress.id!,
-    shieldFileName: "escudo-rayados.png"
+    shieldFileName: "escudo-rayados.png",
   });
 
   const teamRayados = await Team.create({
@@ -191,10 +190,10 @@ export async function setupDummy(): Promise<void> {
   });
 
   const schoolCali = await School.create({
-    number: 6,
+    clave: "49NSJ5743H",
     name: "Deportivo Cali",
     addressId: schoolAddress.id!,
-    shieldFileName: "escudo-depor-cali.png"
+    shieldFileName: "escudo-depor-cali.png",
   });
 
   const teamCali = await Team.create({
@@ -205,10 +204,10 @@ export async function setupDummy(): Promise<void> {
   });
 
   const schoolGdl = await School.create({
-    number: 7,
+    clave: "54IKH8449Z",
     name: "Guadalajara",
     addressId: schoolAddress.id!,
-    shieldFileName: "escudo-gdl.png"
+    shieldFileName: "escudo-gdl.png",
   });
 
   const teamGdl = await Team.create({
@@ -219,10 +218,10 @@ export async function setupDummy(): Promise<void> {
   });
 
   const schoolJunior = await School.create({
-    number: 8,
+    clave: "21UXF0451T",
     name: "Atlético Junior",
     addressId: schoolAddress.id!,
-    shieldFileName: "escudo-junior.png"
+    shieldFileName: "escudo-junior.png",
   });
 
   const teamJunior = await Team.create({
@@ -273,7 +272,7 @@ export async function setupDummy(): Promise<void> {
     teamId: teamSantafe.id!,
     minute: 10,
   });
-  
+
   goal = await Goal.create({
     matchId: match1.id!,
     studentId: estudianteA.id!,
@@ -281,7 +280,7 @@ export async function setupDummy(): Promise<void> {
     minute: 20,
   });
 
-  let date:Date = new Date()
+  let date: Date = new Date();
 
   const match2 = await Match.create({
     phaseId: quarterFinals!.id!,
@@ -314,8 +313,8 @@ export async function setupDummy(): Promise<void> {
       name: "SEMIFINAL",
     },
   });
-  date.setDate(date.getDate() + 1)
-  
+  date.setDate(date.getDate() + 1);
+
   const match5 = await Match.create({
     phaseId: semiFinals!.id!,
     startDate: date,
@@ -331,8 +330,7 @@ export async function setupDummy(): Promise<void> {
     teamAId: teamRayados.id!,
     teamBId: teamJunior.id!,
   });
-  
-  
+
   // THERE IS 1 FINAL MATCH: SANTA FE VS RAYADOS
 
   const final = await Phase.findOne({
@@ -341,7 +339,7 @@ export async function setupDummy(): Promise<void> {
     },
   });
 
-  date.setDate(date.getDate() + 1)
+  date.setDate(date.getDate() + 1);
 
   const match7 = await Match.create({
     phaseId: final!.id!,
@@ -351,5 +349,72 @@ export async function setupDummy(): Promise<void> {
     teamBId: teamRayados.id!,
   });
 
-  return ;
+  let results: any[] = [];
+
+  function saveData() {
+    let savedUsers = 0;
+    results.forEach((row) => {
+      const dto: UserDTO = {
+        password: "1234",
+        CURP: row.CURP,
+        firstName: row.firstName,
+        lastName: row.lastName,
+        email: row.email,
+        birthDate: new Date(row.birthDate),
+        gender: row.gender,
+        role: row.role,
+        phone: row.phone,
+        address: {
+          address1: row.address1,
+          address2: row.address2,
+          city: row.city,
+          state: row.state,
+          postalCode: row.postalCode,
+          country: row.country,
+        },
+        student: {
+          fieldPosition: row.fieldPosition,
+          shirtNumber: row.shirtNumber,
+          IMSS: row.IMSS,
+        },
+      };
+      try {
+        UserService.createUser(dto).then((user) => {
+          console.log(`Created user: ${user.firstName} ${user.lastName}`);
+          Team.findOne({
+            where: { tournamentId: tournament.id },
+            include: [
+              {
+                model: School,
+                right: true,
+                where: { clave: row.claveEscuela },
+              },
+            ],
+          }).then((team) => {
+            user.getStudent().then((student) => {
+              student.teamId = team!.id;
+              student.save();
+              console.log(
+                `User ${user.firstName} ${user.lastName} was registered into school ${team?.School.name}`
+              );
+              savedUsers++;
+            });
+          });
+        });
+      } catch (error) {
+        console.error(`Error inserting user ${dto.firstName} ${dto.lastName}`);
+      } 
+    });
+  }
+
+  const csvFileContent = fs.readFileSync(process.env.CSV_FILE_DIR!, "utf8");
+  results = parse(csvFileContent, {
+    columns: true, // Use the first row as column headers
+    skip_empty_lines: true, // Skip empty lines
+    bom: true,
+  });
+
+  saveData();
+
+  return;
 }

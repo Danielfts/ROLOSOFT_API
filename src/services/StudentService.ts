@@ -73,7 +73,7 @@ class StudentService {
         school: {
           id: i.Student.Team.schoolId,
           name: i.Student.Team.School.name,
-          number: i.Student.Team.School.number,
+          clave: i.Student.Team.School.clave
         },
       };
       return dto;
@@ -180,7 +180,7 @@ class StudentService {
         school: {
           id: i.Team.schoolId,
           name: i.Team.School.name,
-          number: i.Team.School.number,
+          clave: i.Team.School.clave,
         },
       };
       return dto;
@@ -284,6 +284,10 @@ class StudentService {
         },
         {
           model: User
+        },
+        {
+          model: Team,
+          include: [{model: School}]
         }
       ]
     });
@@ -300,6 +304,7 @@ class StudentService {
       greenCards: student.GreenCards.length,
       shieldFileName: student.Team.School.shieldFileName,
     }
+    return dto;
   }
 }
 

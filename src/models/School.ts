@@ -8,7 +8,7 @@ import Student from "./Student";
 class School extends Model <InferAttributes<School>, InferCreationAttributes<School>> {
   declare id: CreationOptional<UUID>;
   declare name: string;
-  declare number: number;
+  declare clave: string;
   declare addressId: UUID;
   declare Address : NonAttribute<Address>;
   declare shieldFileName: CreationOptional<string>;
@@ -29,8 +29,8 @@ School.init({
     primaryKey: true,
     defaultValue: DataTypes.UUIDV4
   },
-  number: {
-    type: DataTypes.INTEGER,
+  clave: {
+    type: DataTypes.STRING,
     allowNull: false,
   },
   name: {
