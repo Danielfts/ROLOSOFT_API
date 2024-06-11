@@ -8,6 +8,7 @@ import ServerError from "../errors/ServerError";
 import { StatusCodes } from "http-status-codes";
 import GeneralTable from "../models/GeneralTable";
 import Goal from "../models/Goal";
+import { ftruncate } from "fs";
 
 class GeneralTableService {
   public static async updateGeneralTable(tournamentId: UUID): Promise<void> {
@@ -203,6 +204,7 @@ class GeneralTableService {
 
     const generalTableObject: object[] = generalTable.map((gt) => {
       return {
+        schoolId: gt.Team.School.id,
         team: gt.Team.School.name,
         victories: gt.victories,
         draws: gt.draws,
